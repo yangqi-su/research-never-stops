@@ -1,0 +1,8 @@
+{
+  "instructions": [
+    "ocaf/instructions/core-safety.md",
+    "ocaf/instructions/analysis-defaults.md",
+    "ocaf/instructions/bootstrap-policy.md"
+  ],
+  "$schema": "https://opencode.ai/config.json"
+}

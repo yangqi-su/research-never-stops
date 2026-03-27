@@ -1,0 +1,35 @@
+# Workflow Handoff Format
+
+Use concise Markdown summaries with the same stable header block and section order.
+
+## Required header block
+
+Every workflow summary file should begin with these bullet fields:
+
+- `Plan ID`: stable stem such as `plans-20260321-1530-train-baseline`
+- `Plan`: current path to the plan file
+- `Run Directory`: current path to the sibling run directory
+- `Path State`: `active` or `archived`
+- `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
+- `Step`: one-line description of the concrete step
+- `Timestamp`: creation or update time if known
+
+## Common writing rules
+
+- Prefer short factual sections over long prose.
+- Reference file paths instead of dumping large logs or artifacts.
+- Distinguish confirmed results from hypotheses.
+- Keep scope tied to one concrete plan step.
+- If the step is archived, update the header paths to the archived location.
+
+## Standard files
+
+- `implementation-summary.md`
+- `review-summary.md`
+- `workflow-summary.md`
+
+## Decision contracts
+
+- `workflow-summary.md` should expose the next orchestration decision for `orchestrator`.
+- `implementation-summary.md` should expose both the execution-routing decision and the resulting execution state.
+- `review-summary.md` should expose the recommended recovery or completion state after escalation.

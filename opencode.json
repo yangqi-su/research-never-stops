@@ -1,0 +1,43 @@
+{
+  "instructions": [
+    "ocaf/instructions/core-safety.md",
+    "ocaf/instructions/analysis-defaults.md",
+    "ocaf/instructions/bootstrap-policy.md",
+    "workflow/WORKFLOW_RULES.md"
+  ],
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "plan": {
+      "model": "openai/gpt-5.4",
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    "build": {
+      "model": "openai/gpt-5.4"
+    },
+    "general": {
+      "model": "openai/gpt-5.4-mini",
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    "explore": {
+      "model": "openai/gpt-5.4-mini"
+    }
+  },
+  "provider": {
+    "openrouter": {
+      "models": {
+        "minimax/minimax-m2.5": {
+          "options": {
+            "provider": {
+              "only": ["minimax/fp8"],
+              "allow_fallbacks": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

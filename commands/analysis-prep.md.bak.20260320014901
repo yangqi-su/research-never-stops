@@ -1,0 +1,24 @@
+---
+description: Safely inspect the current directory, summarize the analysis workflow, and recommend a minimal OCAF scaffold
+agent: ocaf-analysis-plan
+subtask: true
+---
+Inspect the current directory as a potential analysis project.
+
+Work in safe planning mode:
+
+- avoid direct reads of large result, data, model, cache, and binary artifacts
+- infer project structure from small files, scripts, workflow configs, manifests, README files, and directory layout
+- identify likely languages, workflow tools, current stage, and any existing agentic-analysis files
+
+Then provide:
+
+1. a concise summary of what this directory appears to be doing
+2. the likely project or analysis style
+3. the key files or directories that support that conclusion
+4. major ambiguities or risks
+5. the minimal OCAF-style scaffold recommended here
+6. the exact files that an `/analysis-init` pass should create or minimally update
+7. optional next steps or domain modules if relevant
+
+Treat any arguments as user preferences, scope hints, or domain hints: $ARGUMENTS
