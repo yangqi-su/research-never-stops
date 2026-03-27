@@ -12,7 +12,9 @@ Behavior:
 - resume or recreate `workflow-session.json` as needed
 - start or resume the persistent `workflow` sidecar
 - keep delegating automatically until `workflow` returns a terminal state: `archive`, `wait`, `blocked`, or `needs-user`
-- use `implementation` for normal work and `review` only for escalation
+- use `implementation` for normal work
+- use `analysis` when meaningful outputs already exist and the current step needs interpretation before archival or the next decision
+- use `review` only for escalation due to failure, risky changes, or unclear results
 - do not stop and ask the user what agent to run next between normal non-terminal stages
 
 When you stop, report the current plan path, run directory, terminal state, and the key evidence.

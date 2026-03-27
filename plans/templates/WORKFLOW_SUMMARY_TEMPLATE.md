@@ -12,12 +12,18 @@
 
 ## Inputs
 
-## Outputs
+## Current State
 
 ## Evidence
 
 ## Risks or Limitations
 
 ## Next Step
+
+- `Next Stage`:
+- `Auto Continue`:
+- `Goal`:
+- `Success Criteria`:
+- `Review Reason`:
 
 ## Archive Decision

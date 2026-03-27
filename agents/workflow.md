@@ -62,7 +62,7 @@ Write `workflow-summary.md` using this exact section order:
 
 ## Next Step
 
-- `Next Stage`: `implementation`, `review`, `wait`, `blocked`, `needs-user`, or `archive`
+- `Next Stage`: `implementation`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
 - `Auto Continue`: `yes` or `no`
 - `Goal`: one concrete next action
 - `Success Criteria`: short acceptance bullets or a short sentence
@@ -80,10 +80,17 @@ Rules:
 - ensure the sibling run directory exists; create it if missing
 - expect `orchestrator` to persist this session's `task_id` in `workflow-session.json` inside the sibling run directory
 - keep scope to one concrete step from the plan
+- treat one concrete step as one decision-bearing research unit; avoid shrinking it into a tiny SWE-style subtask when the plan clearly calls for a pilot, comparison, validation pass, or interpretation pass
+- read `planning-handoff.md` fresh from disk when it exists so upstream plan detail is preserved through the workflow loop
 - read any existing `implementation-summary.md` and `review-summary.md` fresh from disk before deciding the current state
+- read any existing `analysis-summary.md` fresh from disk before deciding the current state
 - if `workflow-summary.md` already exists, update it in place instead of assuming a clean run
 - treat `implementation-summary.md` as the unified record for code changes, execution routing, local runs, Slurm runs, and monitoring
 - use `review` only as an exception path for failures, risky changes, or unclear results
+- use `analysis` only when `implementation` has produced meaningful outputs and the current step needs interpretation before archival or the next decision
+- do not use `analysis` for pure scaffolding, config-only, or code-only steps with no meaningful outputs
+- do not use `analysis` when the current step is still blocked by implementation or execution errors; prefer `review` or continued `implementation` instead
+- if meaningful outputs exist and no escalation is needed, prefer `analysis` before `archive`
 - assume `implementation` normally returns only after an execution-required step reaches a terminal state with evidence
 - use `wait` only for exceptional cases where continued monitoring is intentionally deferred or impossible
 - do not decide the exact run command or whether the work is `local` or `slurm`; that belongs to `implementation`
@@ -97,8 +104,9 @@ Your workflow summary should clearly state:
 - the stable `Plan ID`
 - the final plan path and run directory path
 - the implementation and review summary paths that currently exist
+- the analysis summary path that currently exists, if any
 - the overall status and main evidence
 - the blocker or success condition
-- the recommended next stage, such as `implementation`, `review`, `wait`, `blocked`, `needs-user`, or `archive`
+- the recommended next stage, such as `implementation`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
 
 In your normal response to `orchestrator`, also say whether this session is a fresh workflow sidecar or a resumed one.

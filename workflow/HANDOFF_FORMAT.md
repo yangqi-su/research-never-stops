@@ -24,12 +24,20 @@ Every workflow summary file should begin with these bullet fields:
 
 ## Standard files
 
+- `planning-handoff.md` when upstream approved context was provided
 - `implementation-summary.md`
 - `review-summary.md`
+- `analysis-summary.md` when meaningful outputs need interpretation
 - `workflow-summary.md`
+- `result-manifest.md` when canonical outputs are external
 
 ## Decision contracts
 
 - `workflow-summary.md` should expose the next orchestration decision for `orchestrator`.
 - `implementation-summary.md` should expose both the execution-routing decision and the resulting execution state.
 - `review-summary.md` should expose the recommended recovery or completion state after escalation.
+- `analysis-summary.md` should expose what the current step taught us, the main findings and caveats, and the recommended completion or follow-up state after meaningful outputs exist.
+
+## Historical note
+
+- Older archived examples may still mention `execution-summary.md` from an earlier workflow version. Treat `implementation-summary.md` as the current unified execution record.

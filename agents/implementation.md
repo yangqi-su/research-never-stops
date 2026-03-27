@@ -67,9 +67,17 @@ Write `implementation-summary.md` using this exact section order:
 - `Alternatives Considered`: short note on other execution options or `none`
 - `Why Not Local`: short note when `slurm` is chosen, otherwise `none`
 - `Why Not Reduced`: short note if a weaker/faster rerun was considered, otherwise `none`
+- `Queue State`: `none`, `queued`, `running`, `completed`, `failed`, or `unknown`
+- `Heartbeat Source`: short note such as log path, metric file, stdout marker, or `none`
+- `Last Meaningful Progress`: timestamp or `none`
+- `Wait Justified`: `yes`, `no`, or `none`
+- `Resume Condition`: short note or `none`
 - `Execution Status`: `not-run`, `running`, `success`, `failed`, or `blocked`
 - `Job ID`: scheduler id or `none`
 - `Monitoring`: `none`, `active`, `finished`, `failed`, or `unknown`
+- `Primary Output Location`: plan run directory path or explicit external path
+- `External Result Location`: explicit path or `none`
+- `Result Manifest`: `result-manifest.md`, another manifest path, or `none`
 
 ## Execution Evidence
 
@@ -77,7 +85,7 @@ Write `implementation-summary.md` using this exact section order:
 
 ## Next Step
 
-- `Suggested Workflow State`: `implementation`, `review`, `wait`, `blocked`, `needs-user`, or `archive`
+- `Suggested Workflow State`: `implementation`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
 - `Review Recommended`: `yes` or `no`
 - `Review Reason`: `none`, `failure`, `risky-change`, or `unclear-result`
 - `Next Hint`: short note for `workflow`
@@ -109,12 +117,21 @@ Rules:
 - if the plan calls for execution, run it yourself using the chosen mode and monitor the resulting process or job long enough to capture a meaningful state
 - for Slurm-backed execution, use scheduler state plus selective log and output inspection rather than stopping after the job first appears in the queue or starts running
 - treat `running` as an in-memory monitoring state, not the normal final handoff state for a Slurm-backed step
-- when monitoring a Slurm job, check for meaningful output or log changes and keep following the job until you can classify it as `success`, `failed`, or `blocked`
+- when monitoring a Slurm job, classify the run as one of: queued normally, running with heartbeat, running without heartbeat, completed but unverified, blocked due to inactivity, or intentional wait
+- for queued Slurm work, poll scheduler state on a consistent cadence and record whether the job is merely waiting for resources or appears stuck for a material reason
+- for running Slurm work, check scheduler state plus a heartbeat source such as a log path, metric file, checkpoint timestamp, or explicit progress counter
+- when monitoring a Slurm job, keep following the job until you can classify it as `success`, `failed`, or `blocked`, unless an intentional `wait` state is justified under the rules below
 - if outputs or logs show no meaningful change for more than `20 minutes`, treat the job as `blocked`, record the evidence, and explain the likely hang or missing logging issue
 - if the underlying script does not emit enough progress information to support that `20 minute` check, add or request lightweight progress logging before relying on the run
 - do not consider Slurm `COMPLETED` alone sufficient evidence of success; verify that expected outputs or success signals exist
+- only use `wait` when the job is clearly healthy, expected to continue for a long time, and a concrete resume condition is recorded in `implementation-summary.md`
+- when `wait` is used, record why continued active monitoring is not the right use of the current session and exactly what evidence should trigger the next resume
 - if local execution is chosen, still record why Slurm was not appropriate and why the job can finish without risking timeout or under-resource issues
-- keep execution-side artifacts such as Slurm scripts and concise logs in the plan's sibling run directory when useful
+- keep execution-side artifacts such as Slurm scripts, concise logs, command snapshots, config snapshots, and readiness-test outputs in the plan's sibling run directory by default
+- treat the plan's sibling run directory as the default home for workflow-control artifacts and small implementation-side outputs
+- allow large or canonical experiment results outside the run directory only when the plan explicitly names the external destination or the user has approved it
+- if a step will generate true experiment results and no canonical external result location has been specified, stop at `needs-user` rather than inventing one
+- when outputs are stored outside the run directory, write `result-manifest.md` in the run directory that records the result roots, what was written there, and how those outputs map back to the current plan step
 - always write `implementation-summary.md` in the plan's sibling run directory using the exact inline template above
 - if `implementation-summary.md` already exists, update it with the latest implementation state instead of assuming a clean run
 - if the step should not run yet, record `Run Mode: none` and explain why

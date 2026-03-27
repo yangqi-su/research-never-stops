@@ -23,7 +23,7 @@ Reference the files, configs, scripts, or prior plans that matter.
 
 ## Concrete Step
 
-Describe the exact implementation task to hand to the workflow agent.
+Describe the exact decision-bearing research unit to hand to the workflow agent.
 
 ## Acceptance Criteria
 
@@ -40,6 +40,8 @@ List important unknowns, resource constraints, or dependencies.
 ## Archive Checklist
 
 - plan file and sibling run directory exist
+- `planning-handoff.md` exists when upstream planning context was provided
 - implementation, review, and workflow summaries are present or intentionally skipped
+- analysis and result-manifest artifacts are present or intentionally skipped when the step produced interpretable outputs or external results
 - optional execution artifacts in the run directory are recorded if they were created
 - next step is recorded before moving to `plans/archive/`

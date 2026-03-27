@@ -6,9 +6,23 @@ options:
   reasoningEffort: high
 temperature: 0.1
 permission:
-  edit: allow
+  edit: deny
   bash:
     "*": ask
+    "git status": allow
+    "git status *": allow
+    "git diff": allow
+    "git diff *": allow
+    "git log": allow
+    "git log *": allow
+    "git show": allow
+    "git show *": allow
+    "git rev-parse": allow
+    "git rev-parse *": allow
+    "git branch": allow
+    "git branch *": allow
+    "git ls-files": allow
+    "git ls-files *": allow
     "ls": allow
     "ls *": allow
     "grep *": allow
@@ -73,7 +87,9 @@ Your job is to read the latest workflow and implementation summaries for one pla
 Rules:
 
 - do not make code changes or submit jobs yourself
+- never change files; this agent is review-only
 - focus on whether the implementation matched the stated goal and whether execution evidence supports success, failure, waiting, or ambiguity
+- focus on failure diagnosis, risky-change assessment, and unclear-result triage; normal interpretation of meaningful step outputs belongs to `analysis`
 - distinguish confirmed findings from hypotheses
 - for large text files `*csv`, `*txt`, `*tsv` and the sort. files, always check how many columns there are before trying to read, and don't ever read more than 5 lines and 100 columns, if truly needed, be smart and read first and last few lines and first and last few columns.
 - when there are errors or blockers, provide practical suggestions to solve them
@@ -82,6 +98,7 @@ Rules:
 - if `review-summary.md` already exists, update it with the latest diagnosis instead of assuming a clean run
 - keep recommendations tightly scoped to the current plan step
 - make suggested fixes practical, evidence-based, and ordered
+- do not act as the durable project-memory updater; that belongs to `status`
 - do not invoke other agents
 - assume `orchestrator` owns delegation and that `workflow` will be resumed separately after you finish
 

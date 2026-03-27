@@ -12,13 +12,32 @@
 
 ## Inputs
 
-## Outputs
+## Changes Made
 
 ## Validation
 
-## How to Run
+## Execution Decision
 
-## Execution Requirements
+- `Run Mode`:
+- `Decision Basis`:
+- `Requested Cores`:
+- `Parallelization Plan`:
+- `Alternatives Considered`:
+- `Why Not Local`:
+- `Why Not Reduced`:
+- `Queue State`:
+- `Heartbeat Source`:
+- `Last Meaningful Progress`:
+- `Wait Justified`:
+- `Resume Condition`:
+- `Execution Status`:
+- `Job ID`:
+- `Monitoring`:
+- `Primary Output Location`:
+- `External Result Location`:
+- `Result Manifest`:
+
+## Execution Evidence
 
 ## Risks or Limitations
 

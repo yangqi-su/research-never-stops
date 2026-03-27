@@ -12,7 +12,8 @@ Behavior:
 - start or resume the persistent `workflow` sidecar
 - keep delegating automatically until `workflow` returns a terminal state: `archive`, `wait`, `blocked`, or `needs-user`
 - use `implementation` for code changes, validation, execution routing, actual local or Slurm execution, and monitoring
-- use `review` only when the workflow state or implementation evidence calls for escalation
+- use `analysis` when `implementation` has produced meaningful outputs and the current step needs interpretation before archival or the next decision
+- use `review` only when the workflow state or implementation evidence calls for escalation due to failure, risky changes, or unclear results
 - do not stop and ask the user what agent to run next between normal non-terminal stages
 - if multiple active plans exist and the arguments do not identify one, ask one focused question
 
