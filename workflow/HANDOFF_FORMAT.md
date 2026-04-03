@@ -34,9 +34,16 @@ Every workflow summary file should begin with these bullet fields:
 ## Decision contracts
 
 - `workflow-summary.md` should expose the next orchestration decision for `orchestrator`.
+- `workflow-summary.md` should include a short `Decision Basis` so `orchestrator` can relay the workflow decision without reconstructing the state itself.
 - `implementation-summary.md` should expose both the execution-routing decision and the resulting execution state.
 - `review-summary.md` should expose the recommended recovery or completion state after escalation.
 - `analysis-summary.md` should expose what the current step taught us, the main findings and caveats, and the recommended completion or follow-up state after meaningful outputs exist.
+
+## Planning handoff file
+
+- `planning-handoff.md` should preserve approved upstream wording as literally as possible.
+- Use it as the canonical preserved handoff context, not as a fresh summary.
+- Add only minimal appended clarification when needed to name the already-selected concrete step.
 
 ## Historical note
 

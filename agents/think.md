@@ -16,7 +16,22 @@ permission:
     "wc *": allow
     "head *": allow
     "tail *": allow
+    "git status": allow
+    "git status *": allow
+    "git diff": allow
+    "git diff *": allow
+    "git log": allow
+    "git log *": allow
+    "git show": allow
+    "git show *": allow
+    "git rev-parse": allow
+    "git rev-parse *": allow
+    "git branch": allow
+    "git branch *": allow
+    "git ls-files": allow
+    "git ls-files *": allow
   webfetch: ask
+  question: allow
   task:
     "*": deny
 ---

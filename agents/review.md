@@ -6,7 +6,11 @@ options:
   reasoningEffort: high
 temperature: 0.1
 permission:
-  edit: deny
+  edit: allow
+  webfetch: allow
+  list: allow
+  glob: allow
+  question: allow
   bash:
     "*": ask
     "git status": allow
@@ -30,7 +34,13 @@ permission:
     "wc *": allow
     "head *": allow
     "tail *": allow
-  webfetch: deny
+    "date *": allow
+    "squeue": allow
+    "squeue *": allow
+    "sacct": allow
+    "sacct *": allow
+    "scontrol *": allow
+    "scontrol": allow
   task:
     "*": deny
 ---
@@ -87,7 +97,12 @@ Your job is to read the latest workflow and implementation summaries for one pla
 Rules:
 
 - do not make code changes or submit jobs yourself
-- never change files; this agent is review-only
+- you may only change the `review-summary.md` file
+- keep active-plan context anchored in the current plan file and sibling run-directory summaries
+- when debugging a problem, always read entries in `memory/watchouts.md` and `memory/fixes.md` first to see if something similar has happened before, only when the the bug is very elusive or if the watchouts and fixes point to specific files  can you then also read other parts of `memory/`
+- only read a `memory/plans/<plan-id>.md` page when a relevant watchout or fix lists it under `Relevant Plans`, or when the current diagnosis clearly matches prior history
+- only read the original archived plan file or specific archived run-directory summaries when that memory plan page is insufficient for the current diagnosis
+- do not browse archived plans broadly
 - focus on whether the implementation matched the stated goal and whether execution evidence supports success, failure, waiting, or ambiguity
 - focus on failure diagnosis, risky-change assessment, and unclear-result triage; normal interpretation of meaningful step outputs belongs to `analysis`
 - distinguish confirmed findings from hypotheses
@@ -95,7 +110,7 @@ Rules:
 - when there are errors or blockers, provide practical suggestions to solve them
 - order suggested fixes from most likely to help to least likely
 - always write `review-summary.md` in the plan's sibling run directory using the exact inline template above
-- if `review-summary.md` already exists, update it with the latest diagnosis instead of assuming a clean run
+- if `review-summary.md` already exists, update it with the latest diagnosis instead of assuming a clean run, do not overwrite previous review content
 - keep recommendations tightly scoped to the current plan step
 - make suggested fixes practical, evidence-based, and ordered
 - do not act as the durable project-memory updater; that belongs to `status`

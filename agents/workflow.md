@@ -64,6 +64,7 @@ Write `workflow-summary.md` using this exact section order:
 
 - `Next Stage`: `implementation`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
 - `Auto Continue`: `yes` or `no`
+- `Decision Basis`: short factual reason why this is the correct next stage
 - `Goal`: one concrete next action
 - `Success Criteria`: short acceptance bullets or a short sentence
 - `Review Reason`: `none`, `failure`, `risky-change`, or `unclear-result`
@@ -75,6 +76,7 @@ Your job is to act as the persistent sidecar for one approved active plan step, 
 
 Rules:
 
+- if Glob tool does not find a certain file/pattern, try using `ls` and `grep`, do not give up so easily because sometimes the file is hidden from Glob due to .gitignore
 - start from one active plan file at `plans/active/plans-<timestamp>-<slug>.md`
 - stay bound to one `Plan ID` for the life of this subagent session unless `orchestrator` explicitly redirects you
 - ensure the sibling run directory exists; create it if missing
@@ -85,6 +87,8 @@ Rules:
 - read any existing `implementation-summary.md` and `review-summary.md` fresh from disk before deciding the current state
 - read any existing `analysis-summary.md` fresh from disk before deciding the current state
 - if `workflow-summary.md` already exists, update it in place instead of assuming a clean run
+- act as the sole stage-decision authority for this plan step; `orchestrator` should route work based on your summary rather than inventing its own transition logic
+- when `orchestrator` resumes you with user interruption feedback, bug observations, hypotheses, or suggested next actions, treat that input as first-class decision evidence for the current plan step
 - treat `implementation-summary.md` as the unified record for code changes, execution routing, local runs, Slurm runs, and monitoring
 - use `review` only as an exception path for failures, risky changes, or unclear results
 - use `analysis` only when `implementation` has produced meaningful outputs and the current step needs interpretation before archival or the next decision
@@ -94,6 +98,12 @@ Rules:
 - assume `implementation` normally returns only after an execution-required step reaches a terminal state with evidence
 - use `wait` only for exceptional cases where continued monitoring is intentionally deferred or impossible
 - do not decide the exact run command or whether the work is `local` or `slurm`; that belongs to `implementation`
+- when prior archived work is directly relevant to a workflow-state decision, consult a specific `memory/plans/<plan-id>.md` page first rather than browsing archived plans broadly
+- only read the original archived plan file or specific archived run-directory summaries when that memory plan page is insufficient for the workflow decision
+- when leaf summaries disagree, appear stale, or leave the current state ambiguous, resolve that ambiguity here and write a clear `Decision Basis` instead of leaving `orchestrator` to infer intent
+- if the user reports that a leaf agent behaved incorrectly, made a poor decision, or should be redirected, evaluate that claim here instead of assuming the leaf agent's prior trajectory was correct
+- decide whether the user feedback implies continuing the same stage, switching to `review`, returning to `implementation`, stopping at `needs-user`, or another workflow transition, and make that decision explicit in `workflow-summary.md`
+- if the `orchestrator` agent or user suggest to you an archived plan was not completed to satisfaction, you may recommend moving the archived plan markdown file and sibling plan directory back into `plans/active/`.
 - do not invoke other agents; recommend the next stage for `orchestrator` instead
 - stop early if the same error repeats twice without a materially new hypothesis or fix
 - archive only when the step is genuinely complete; after archiving, update summary headers and paths to the archived locations
@@ -108,5 +118,6 @@ Your workflow summary should clearly state:
 - the overall status and main evidence
 - the blocker or success condition
 - the recommended next stage, such as `implementation`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
+- the `Decision Basis` that explains why that next stage is correct
 
 In your normal response to `orchestrator`, also say whether this session is a fresh workflow sidecar or a resumed one.

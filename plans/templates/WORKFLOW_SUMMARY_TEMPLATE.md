@@ -22,6 +22,7 @@
 
 - `Next Stage`:
 - `Auto Continue`:
+- `Decision Basis`:
 - `Goal`:
 - `Success Criteria`:
 - `Review Reason`:

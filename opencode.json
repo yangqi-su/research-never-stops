@@ -36,7 +36,16 @@
               "allow_fallbacks": false
             }
           }
+        },
+        "minimax/minimax-m2.7": {
+          "options": {
+            "provider": {
+              "only": ["minimax/fp8"],
+              "allow_fallbacks": false
+            }
+          }
         }
+
       }
     }
   }

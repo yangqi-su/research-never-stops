@@ -5,10 +5,10 @@ These rules define the default behavior for the custom global workflow agents.
 ## When to use this workflow
 
 - Use this workflow only when the user explicitly asks to start, resume, inspect, or continue the workflow.
-- Preferred entrypoints are explicit commands such as `/workflow-start`, `/workflow-resume`, and `/workflow-status`.
+- Preferred entrypoints are explicit commands such as `/workflow-handoff`, `/workflow-start`, `/workflow-resume`, and `/workflow-status`.
 - Treat `orchestrator` as the dedicated primary agent for this workflow.
 - Do not force the workflow for simple one-off tasks that do not benefit from plans or handoff files.
-- Use `launch` to initialize a new plan-centered task. Use `workflow` when there is already an active plan step to inspect or advance.
+- Use `/workflow-handoff` or `launch` to initialize a new plan-centered task. Treat `/workflow-handoff` as a primary-agent command that passes approved conversation context into `launch` with minimal paraphrase. Use `workflow` when there is already an active plan step to inspect or advance.
 
 ## Project structure expectations
 
@@ -33,12 +33,13 @@ These rules define the default behavior for the custom global workflow agents.
 ## Agent boundaries
 
 - `orchestrator` owns the explicit workflow loop and stops only at terminal states such as `archive`, `wait`, `blocked`, or `needs-user`.
-- `launch` creates the plan file and sibling run directory.
-- `workflow` inspects one concrete step, updates `workflow-summary.md`, and manages archival decisions as a persistent per-plan sidecar.
+- `orchestrator` is the dispatcher and session owner, not a second workflow-policy engine; it should route work according to `workflow-summary.md` rather than inferring stage transitions from leaf summaries.
+- `launch` creates the plan file and sibling run directory and preserves approved upstream context in `planning-handoff.md` with minimal paraphrase.
+- `workflow` inspects one concrete step, updates `workflow-summary.md`, resolves ambiguous or stale leaf-state evidence, and manages archival decisions as the persistent per-plan decision sidecar.
 - `implementation` changes code, writes `implementation-summary.md`, decides whether execution should be `local` or `slurm`, runs or submits the job when needed, and monitors the resulting process or job.
 - `review` reads summaries, diagnoses problems, suggests fixes, and writes `review-summary.md` only when escalation is needed.
 - `analysis` reads the latest plan and step evidence, interprets meaningful outputs, and writes `analysis-summary.md` when the step needs a decision-ready interpretation before archival or the next step.
-- `status` is outside the normal command-driven workflow loop and should only be invoked explicitly by a primary agent for project-memory refreshes.
+- `status` is outside the normal command-driven workflow loop and should only be invoked explicitly by a primary agent for project-memory initialization or refreshes.
 
 ## Step granularity
 
