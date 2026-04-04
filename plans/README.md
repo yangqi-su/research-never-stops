@@ -1,8 +1,8 @@
 # Plans Workflow
 
-Use `plans/active/` for in-progress task steps and `plans/archive/` for completed ones.
+Use `plans/active/` for in-progress experiment plans and `plans/archive/` for completed ones.
 
-The global workflow files under `workflow/` are reference material for maintaining agent prompts, not required runtime dependencies.
+The global workflow files under `workflow/` are reference material for maintaining agent prompts, not required runtime dependencies. The canonical experiment-plan template now lives in `/draft-plan` and `/write-plan`, not in standalone template files.
 
 ## Naming
 
@@ -14,7 +14,6 @@ The global workflow files under `workflow/` are reference material for maintaini
 
 ## Expected run-directory files
 
-- `planning-handoff.md` when upstream planning context was provided
 - `workflow-session.json`
 - `implementation-summary.md`
 - `review-summary.md`
@@ -25,28 +24,28 @@ The global workflow files under `workflow/` are reference material for maintaini
 
 ## Lifecycle
 
-1. If you want to preserve approved planning context literally before orchestration begins, use `/workflow-handoff`; the current primary agent should use the approved conversation context and delegate it to `launch` without summarizing it first.
-2. Otherwise create a plan file in `plans/active/` using `plans/PLAN_TEMPLATE.md` as a starting point, or let `launch` create it when the step is already concrete.
-3. Create the sibling run directory manually or let `/workflow-handoff` or `launch` create it.
-4. Start the workflow explicitly with `/workflow-start` or resume it later with `/workflow-resume`.
-5. Let `orchestrator` start `workflow` once for the plan and persist its `task_id` in `workflow-session.json`.
-6. Let `orchestrator` invoke `implementation` and optional `review` or `analysis` one stage at a time.
-7. After each stage, resume the same `workflow` session using the saved `task_id`.
+1. Use `/draft-plan` to draft or refine the full multi-phase experiment plan in conversation only.
+2. Use `/write-plan` to write the approved plan to `plans/active/` and create the sibling run directory.
+3. Start the workflow explicitly with `/workflow-start` or resume it later with `/workflow-resume`.
+4. Let `orchestrator` start `workflow` once for the plan and persist its `task_id` in `workflow-session.json`.
+5. Let `workflow` pick the current active phase and recommend the next stage.
+6. Let `orchestrator` invoke fresh `implementation` rounds phase-by-phase, with optional `review` or `analysis` when needed.
+7. After each leaf stage, resume the same `workflow` session using the saved `task_id`.
 8. Keep summaries and execution artifacts in the sibling run directory.
-9. When the step is finished, move both the plan file and sibling run directory to `plans/archive/`.
+9. When the full plan is finished, move both the plan file and sibling run directory to `plans/archive/`.
 
-## Step definition
+## Plan and phase definition
 
-One concrete step should be one decision-bearing research unit.
+One active plan should be one bounded experiment or study.
 
-Examples:
+Examples of valid phases inside one plan:
 
 - one pilot experiment to validate configuration correctness
-- one method comparison on a fixed pilot split
-- one preprocessing validation pass before full runs
-- one interpretation pass over completed outputs
+- one method-comparison batch on a fixed pilot split
+- one preprocessing validation phase before full runs
+- one interpretation phase over completed outputs
 
-Avoid fragmenting these into tiny SWE-style subtasks when doing so would hide the actual decision the user needs.
+Avoid fragmenting these into tiny SWE-style subtasks when doing so would hide the real experimental decision. Let `workflow` manage phase progression inside the full plan.
 
 ## Workflow sidecar file
 
@@ -68,11 +67,11 @@ If the saved `workflow_task_id` cannot be resumed, `orchestrator` should create 
 ## Agent responsibilities
 
 - `orchestrator` owns the explicit workflow loop, persists `workflow-session.json`, and delegates stages according to `workflow-summary.md`.
-- `launch` is a literal-first plan initializer that creates one concrete active step, initializes the run directory, and preserves upstream approved planning context in `planning-handoff.md` when it exists.
-- `workflow` acts as a persistent sidecar and stage-decision authority for one plan, inspects the current state, writes `workflow-summary.md`, and recommends the next stage or archival decision.
-- `implementation` changes code, decides `local` versus `slurm`, runs or submits the step when needed, monitors it, and writes `implementation-summary.md`.
+- `/write-plan` is the mechanical plan-writing path that persists the approved full plan and initializes the run directory.
+- `workflow` acts as a persistent sidecar and stage-decision authority for one plan, tracks the current phase, writes `workflow-summary.md`, and recommends the next stage or archival decision.
+- `implementation` changes code, decides `local` versus `slurm`, runs or submits the current phase when needed, monitors it, and writes `implementation-summary.md`.
 - `review` writes `review-summary.md` only when deeper diagnosis is needed.
-- `analysis` writes `analysis-summary.md` when the step has meaningful outputs that need interpretation before archival or the next decision.
+- `analysis` writes `analysis-summary.md` when the current phase has meaningful outputs that need interpretation before the next phase or archival.
 - `status` is a project-memory subagent that primary agents may invoke explicitly when workspace memory under `memory/` should be initialized or refreshed.
 
 ## Workspace memory
@@ -96,4 +95,4 @@ If the saved `workflow_task_id` cannot be resumed, `orchestrator` should create 
 
 ## Historical note
 
-Older archived examples in this directory may still mention `execution-summary.md` from an earlier split execution design. The current workflow uses `implementation-summary.md` as the unified execution-routing and execution-state record.
+Older archived examples in this directory may still mention `execution-summary.md` from an earlier split execution design or older single-step plans. The current workflow uses `implementation-summary.md` as the unified execution-routing and execution-state record and treats one active plan as a multi-phase experiment contract.

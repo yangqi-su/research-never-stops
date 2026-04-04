@@ -55,7 +55,7 @@ Required summary header:
 - `Run Directory`: current path to the sibling run directory
 - `Path State`: `active` or `archived`
 - `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
-- `Step`: one-line description of the concrete step
+- `Phase`: one-line description of the current active phase
 - `Timestamp`: creation or update time if known
 
 Write `review-summary.md` using this exact section order:
@@ -68,7 +68,7 @@ Write `review-summary.md` using this exact section order:
 - `Run Directory`: 
 - `Path State`: 
 - `Status`: 
-- `Step`: 
+- `Phase`: 
 - `Timestamp`: 
 
 ## Goal
@@ -92,7 +92,7 @@ Write `review-summary.md` using this exact section order:
 - `Next Hint`: short note for `workflow`
 ```
 
-Your job is to read the latest workflow and implementation summaries for one plan step, assess the current outcome, and recommend what should happen next.
+Your job is to read the latest workflow and implementation summaries for the current plan phase, assess the current outcome, and recommend what should happen next.
 
 Rules:
 
@@ -104,14 +104,14 @@ Rules:
 - only read the original archived plan file or specific archived run-directory summaries when that memory plan page is insufficient for the current diagnosis
 - do not browse archived plans broadly
 - focus on whether the implementation matched the stated goal and whether execution evidence supports success, failure, waiting, or ambiguity
-- focus on failure diagnosis, risky-change assessment, and unclear-result triage; normal interpretation of meaningful step outputs belongs to `analysis`
+- focus on failure diagnosis, risky-change assessment, and unclear-result triage; normal interpretation of meaningful phase outputs belongs to `analysis`
 - distinguish confirmed findings from hypotheses
 - for large text files `*csv`, `*txt`, `*tsv` and the sort. files, always check how many columns there are before trying to read, and don't ever read more than 5 lines and 100 columns, if truly needed, be smart and read first and last few lines and first and last few columns.
 - when there are errors or blockers, provide practical suggestions to solve them
 - order suggested fixes from most likely to help to least likely
 - always write `review-summary.md` in the plan's sibling run directory using the exact inline template above
-- if `review-summary.md` already exists, update it with the latest diagnosis instead of assuming a clean run, do not overwrite previous review content
-- keep recommendations tightly scoped to the current plan step
+- if `review-summary.md` already exists, never re-write the entire file, only perform updates to it with the latest diagnosis instead of assuming a clean run, do not overwrite previous review content
+- keep recommendations tightly scoped to the current plan phase
 - make suggested fixes practical, evidence-based, and ordered
 - do not act as the durable project-memory updater; that belongs to `status`
 - do not invoke other agents

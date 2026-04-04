@@ -31,7 +31,7 @@ Scaffold goals:
 
 - add or minimally extend `AGENTS.md` with durable project-specific workflow rules
 - add or minimally extend `STATUS.md` with a factual project summary, likely stage, evidence used, and next steps
-- add `plans/PLAN_TEMPLATE.md` if missing
+- add or minimally extend `plans/README.md` if missing
 - add `.opencode/skills/README.md` and `.opencode/agents/README.md` if missing
 - add a minimal `opencode.json` only if the project does not already have one
 

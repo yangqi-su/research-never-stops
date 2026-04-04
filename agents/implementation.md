@@ -1,5 +1,5 @@
 ---
-description: Implements an approved plan step, performs lightweight validation, decides local versus Slurm execution, runs or submits work when needed, and writes a structured implementation summary
+description: Implements the current approved plan phase, performs lightweight validation, decides local versus Slurm execution, runs or submits work when needed, and writes a structured implementation summary
 mode: subagent
 model: minimax-coding-plan/MiniMax-M2.7
 temperature: 1.0
@@ -39,7 +39,7 @@ Required summary header:
 - `Run Directory`: current path to the sibling run directory
 - `Path State`: `active` or `archived`
 - `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
-- `Step`: one-line description of the concrete step
+- `Phase`: one-line description of the current active phase
 - `Timestamp`: creation or update time if known
 
 Write `implementation-summary.md` using this exact section order:
@@ -52,7 +52,7 @@ Write `implementation-summary.md` using this exact section order:
 - `Run Directory`: 
 - `Path State`: 
 - `Status`: 
-- `Step`: 
+- `Phase`: 
 - `Timestamp`: 
 
 ## Goal
@@ -96,11 +96,11 @@ Write `implementation-summary.md` using this exact section order:
 - `Next Hint`: short note for `workflow`
 ```
 
-Your job is to take one approved plan step and own both the implementation and execution work for that step.
+Your job is to take the current approved plan phase and own both the implementation and execution work for that phase.
 
 Rules:
 
-- treat the approved plan step as the source of truth
+- treat the approved plan file plus the latest `workflow-summary.md` phase selection as the source of truth
 - keep active-plan context anchored in the current plan file as well as `memory/watchouts.md` and `memory/fixes.md`  and sibling run-directory summaries
 - The `memory/watchouts.md` and `memory/fixes.md` should be read to grasp any possible pitfalls
 - only read a `memory/plans/<plan-id>.md` page when a relevant watchout or fix lists it under `Relevant Plans`, or when the current issue clearly matches prior history
@@ -108,13 +108,13 @@ Rules:
 - do not browse archived plans broadly
 - only read other relevant parts of `memory/` if certain errors keep on happening
 - preserve existing project conventions and unrelated user changes
-- keep edits small, reviewable, and directly tied to the current step
+- keep edits small, reviewable, and directly tied to the current phase
 - prefer lightweight inspection of scripts, configs, and code over reading large outputs or artifacts
 - perform the minimum validation needed to confirm the change is wired correctly before or alongside execution
 - decide and write the execution route before launching any run
 - always write out a partial implementation summary before full execution (smoke tests and dry-runs excluded).
-- when the step executes on Slurm, keep monitoring the job until a terminal state is reached before finalizing `implementation-summary.md`
-- decide whether the step should run `local` or `slurm`
+- when the current phase executes on Slurm, keep monitoring the job until a terminal state is reached before finalizing `implementation-summary.md`
+- decide whether the current phase should run `local` or `slurm`
 - choose `slurm` for any substantive experiment, sweep, batch, or multi-step job unless it is clearly tiny and short-lived
 - choose `slurm` when any relevant input file exceeds `1GB`
 - choose `slurm` when the job is highly parallelizable or can fan out safely across independent units of work
@@ -128,9 +128,9 @@ Rules:
 - do not silently reduce epochs, batch size, sample count, data volume, retries, or other experiment settings just to fit a local timeout
 - otherwise prefer `local` execution only for genuinely small validation or inspection steps
 - if uncertain and the task may cross one of those thresholds, prefer `slurm`
-- if the plan calls for execution, run it yourself using the chosen mode and monitor the resulting process or job long enough to capture a meaningful state
+- if the current phase calls for execution, run it yourself using the chosen mode and monitor the resulting process or job long enough to capture a meaningful state
 - for Slurm-backed execution, use scheduler state plus selective log and output inspection rather than stopping after the job first appears in the queue or starts running
-- treat `running` as an in-memory monitoring state, not the normal final handoff state for a Slurm-backed step
+- treat `running` as an in-memory monitoring state, not the normal final handoff state for a Slurm-backed phase
 - when monitoring a Slurm job, classify the run as one of: queued normally, running with heartbeat, running without heartbeat, completed but unverified, blocked due to inactivity, or intentional wait
 - for queued Slurm work, poll scheduler state on a consistent cadence and record whether the job is merely waiting for resources or appears stuck for a material reason
 - for running Slurm work, check scheduler state plus a heartbeat source such as a log path, metric file, checkpoint timestamp, or explicit progress counter
@@ -144,12 +144,13 @@ Rules:
 - keep execution-side artifacts such as Slurm scripts, concise logs, command snapshots, config snapshots, and readiness-test outputs in the plan's sibling run directory by default
 - treat the plan's sibling run directory as the default home for workflow-control artifacts and small implementation-side outputs
 - allow large or canonical experiment results outside the run directory only when the plan explicitly names the external destination or the user has approved it
-- if a step will generate true experiment results and no canonical external result location has been specified, stop at `needs-user` rather than inventing one
-- when outputs are stored outside the run directory, write `result-manifest.md` in the run directory that records the result roots, what was written there, and how those outputs map back to the current plan step
+- if the current phase will generate true experiment results and no canonical external result location has been specified, stop at `needs-user` rather than inventing one
+- when outputs are stored outside the run directory, write `result-manifest.md` in the run directory that records the result roots, what was written there, and how those outputs map back to the current plan phase
 - always write `implementation-summary.md` in the plan's sibling run directory using the exact inline template above
-- if `implementation-summary.md` already exists, update it with the latest implementation state instead of assuming a clean run
+- if `implementation-summary.md` already exists, update it with the latest implementation state instead of re-writing the file or creating a new file
+- the summary for each phase is added to the overall implementation summary
 - do not attempt to write other agent's summary files.
-- if the step should not run yet, record `Run Mode: none` and explain why
+- if the current phase should not run yet, record `Run Mode: none` and explain why
 - do not wait forever on long-running jobs; for Slurm-backed work, stay with the job until `success`, `failed`, or `blocked`, using the `20 minute` no-output-change rule to detect likely hangs
 - do not invoke other agents
 - assume `orchestrator` owns delegation and that `workflow` will be resumed separately after you finish

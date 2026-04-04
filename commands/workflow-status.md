@@ -12,6 +12,6 @@ Behavior:
 - do not invoke `implementation`, `review`, or `analysis`
 - prefer passive status reporting from the existing summaries and session files rather than reconstructing workflow state yourself
 - only resume `workflow` if the user explicitly asks for a refreshed status or if the existing summaries are too stale or contradictory to summarize responsibly
-- if meaningful outputs appear to exist but no `analysis-summary.md` is present yet, say that a full resume would likely continue with `analysis`
+- if meaningful outputs appear to exist for the current phase but no `analysis-summary.md` is present yet, say that a full resume would likely continue with `analysis`
 
 Report the current workflow state, the latest evidence, whether the summaries appear fresh or stale, and whether a resume would continue work or remain blocked.

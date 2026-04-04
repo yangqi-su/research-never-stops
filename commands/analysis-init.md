@@ -20,7 +20,7 @@ The target scaffold should usually include:
 
 - `AGENTS.md`
 - `STATUS.md`
-- `plans/PLAN_TEMPLATE.md`
+- `plans/README.md`
 - `.opencode/skills/README.md`
 - `.opencode/agents/README.md`
 - `opencode.json` if missing
