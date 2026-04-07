@@ -52,6 +52,7 @@ These rules define the default behavior for the custom global workflow agents.
 - `implementation` should choose `slurm` when any relevant input file exceeds `1GB`.
 - `implementation` should choose `slurm` when the job is highly parallelizable or can fan out safely across independent units of work.
 - `implementation` should choose `slurm` for deep-learning or GPU-requiring work.
+- For GPU-backed Slurm execution, `implementation` should load the `submitting-slurm-gpu-jobs` skill and prefer standard `--gres` submission before any allowed no-GRES fallback.
 - `implementation` should choose `slurm` when expected runtime may exceed `30 minutes`.
 - `implementation` should choose `slurm` whenever a local run would likely hit bash timeouts, require repeated manual reruns, or tempt parameter weakening.
 - `implementation` should require at least `8` CPU cores for any substantive run, local or Slurm, unless technically impossible; if fewer are used, record the exception.
@@ -67,6 +68,7 @@ These rules define the default behavior for the custom global workflow agents.
 - If outputs or logs show no meaningful change for more than `20 minutes`, `implementation` should treat the run as `blocked` and record the evidence.
 - If scripts do not emit enough progress information to support that check, `implementation` should add or request lightweight progress logging.
 - `implementation` should classify long-running work as queued normally, running with heartbeat, running without heartbeat, completed but unverified, blocked due to inactivity, or intentional wait.
+- For opportunistic no-GRES GPU runs, `implementation` should only use the fallback for single-node jobs expected to run `24 hours` or less, and should cancel immediately on likely collision evidence.
 - `implementation` should use `wait` only when the run is healthy and the resume condition is explicitly recorded.
 
 ## Output placement

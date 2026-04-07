@@ -90,6 +90,7 @@ Treat `orchestrator` as the dedicated primary agent for this workflow.
 - `implementation` should choose `slurm` when any relevant input file exceeds `1GB`.
 - `implementation` should choose `slurm` when the job is highly parallelizable or can fan out safely across independent units of work.
 - `implementation` should choose `slurm` for deep-learning or GPU-requiring work.
+- For GPU-backed Slurm execution, `implementation` should load the `submitting-slurm-gpu-jobs` skill and prefer standard `--gres` submission before any allowed no-GRES fallback.
 - `implementation` should choose `slurm` when expected runtime may exceed `30 minutes`.
 - `implementation` should choose `slurm` whenever a local run would likely hit bash timeouts, require repeated manual reruns, or tempt parameter weakening.
 - `implementation` should require at least `8` CPU cores for any substantive run, local or Slurm, unless technically impossible; if fewer are used, record the exception.
@@ -112,4 +113,5 @@ Treat `orchestrator` as the dedicated primary agent for this workflow.
 - If outputs or logs show no meaningful change for more than `20 minutes`, `implementation` should treat the run as `blocked` and record the evidence.
 - If scripts do not emit enough progress information to support that check, `implementation` should add or request lightweight progress logging.
 - `implementation` should distinguish queued jobs, healthy running jobs with heartbeat, running jobs without heartbeat, completed-but-unverified jobs, blocked jobs, and intentional waits.
+- For opportunistic no-GRES GPU runs, `implementation` should only use the fallback for single-node jobs expected to run `24 hours` or less, and should cancel immediately on likely collision evidence.
 - `implementation` should use `wait` only when the job is healthy, expected to keep running, and the resume condition is explicitly recorded.

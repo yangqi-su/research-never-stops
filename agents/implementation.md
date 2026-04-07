@@ -100,6 +100,7 @@ Your job is to take the current approved plan phase and own both the implementat
 
 Rules:
 
+- MOST IMPORTANT: DO NOT OVERWRITE implementation summaries of earlier phases!!
 - treat the approved plan file plus the latest `workflow-summary.md` phase selection as the source of truth
 - keep active-plan context anchored in the current plan file as well as `memory/watchouts.md` and `memory/fixes.md`  and sibling run-directory summaries
 - The `memory/watchouts.md` and `memory/fixes.md` should be read to grasp any possible pitfalls
@@ -119,6 +120,7 @@ Rules:
 - choose `slurm` when any relevant input file exceeds `1GB`
 - choose `slurm` when the job is highly parallelizable or can fan out safely across independent units of work
 - choose `slurm` for deep-learning or GPU-requiring work
+- when the current phase needs GPU-backed Slurm execution, load and follow the `submitting-slurm-gpu-jobs` skill
 - choose `slurm` when expected runtime may exceed `30 minutes`
 - choose `slurm` whenever a local run would likely hit bash timeouts, require repeated manual reruns, or tempt parameter weakening
 - when submitting `slurm` jobs, DO NOT EVER monitor the jobs using a bash script (timeouts of bash command in opencode a hard to control), just use `sleep` and `squeue`/`sacct` smartly for monitoring.
@@ -134,7 +136,9 @@ Rules:
 - when monitoring a Slurm job, classify the run as one of: queued normally, running with heartbeat, running without heartbeat, completed but unverified, blocked due to inactivity, or intentional wait
 - for queued Slurm work, poll scheduler state on a consistent cadence and record whether the job is merely waiting for resources or appears stuck for a material reason
 - for running Slurm work, check scheduler state plus a heartbeat source such as a log path, metric file, checkpoint timestamp, or explicit progress counter
+- for GPU-backed Slurm work, use the skill's scheduler-first routing and record whether submission used `standard-gres` or `opportunistic-no-gres`
 - when monitoring a Slurm job, keep following the job until you can classify it as `success`, `failed`, or `blocked`, unless an intentional `wait` state is justified under the rules below
+- for `opportunistic-no-gres`, only proceed when the skill's fallback eligibility gate passes, keep it single-node, require runtime `24 hours` or less, and cancel immediately on likely collision evidence
 - if outputs or logs show no meaningful change for more than `20 minutes`, treat the job as `blocked`, record the evidence, and explain the likely hang or missing logging issue
 - if the underlying script does not emit enough progress information to support that `20 minute` check, add or request lightweight progress logging before relying on the run
 - do not consider Slurm `COMPLETED` alone sufficient evidence of success; verify that expected outputs or success signals exist
@@ -147,7 +151,7 @@ Rules:
 - if the current phase will generate true experiment results and no canonical external result location has been specified, stop at `needs-user` rather than inventing one
 - when outputs are stored outside the run directory, write `result-manifest.md` in the run directory that records the result roots, what was written there, and how those outputs map back to the current plan phase
 - always write `implementation-summary.md` in the plan's sibling run directory using the exact inline template above
-- if `implementation-summary.md` already exists, update it with the latest implementation state instead of re-writing the file or creating a new file
+- if `implementation-summary.md` already exists, add to it with the latest implementation state instead of re-writing the file or creating a new file
 - the summary for each phase is added to the overall implementation summary
 - do not attempt to write other agent's summary files.
 - if the current phase should not run yet, record `Run Mode: none` and explain why

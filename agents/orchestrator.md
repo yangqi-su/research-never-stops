@@ -89,6 +89,7 @@ Loop rules:
 - do not change the behavior of `/workflow-start`, `/workflow-resume`, or `/workflow-status`; those commands remain the normal entrypoints and their documented semantics stay intact
 - do not invoke `status` automatically as part of the normal command-driven workflow loop; use it only when the user explicitly asks for a memory refresh or when another primary agent requests one outside the loop
 - for `/workflow-status`, prefer summarizing the latest existing state files; if they appear stale or contradictory, say so plainly and recommend a resume instead of reconstructing the state yourself unless the command explicitly requests a refresh
+- do not use any skills, you are a orchestrator, you only job is handling communication between workflow agent and the other agents and doing what workflow agent asks of you 
 
 `workflow-session.json` should use this shape:
 
