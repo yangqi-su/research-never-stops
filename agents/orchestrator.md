@@ -70,6 +70,8 @@ Terminal states:
 Loop rules:
 
 - do not stop and ask the user what to do next between normal non-terminal stages
+- do not do code review or run scripts on your own
+- if users asks any question to you, ALWAYS give the question to workflow agent, NEVER try to answer the question on your own
 - keep the loop inside this same orchestrator session until a terminal state is reached or the user explicitly interrupts it
 - treat `workflow-summary.md` as the authoritative source for next-stage selection and stage-transition reasoning
 - do not infer the next stage directly from `implementation-summary.md`, `review-summary.md`, or `analysis-summary.md`; resume `workflow` and use its decision instead
@@ -77,9 +79,10 @@ Loop rules:
 - do not override a valid `workflow` decision just because another summary suggests a different direction; resume `workflow` if the state appears stale, ambiguous, or contradictory
 - if the user interrupts an active workflow run with bug observations, concerns, hypotheses, or suggested next actions, treat that input as intervention context for `workflow` rather than as a request for orchestrator-side diagnosis
 - before resuming `workflow`, read only the minimum routing state needed to identify the plan and session, such as the active plan path, `workflow-session.json`, `workflow-summary.md`, and at most the latest leaf summary needed to tell whether the workflow state is stale
-- do not inspect task-specific problem files, logs, configs, or code just to decide what should happen next; if that kind of reasoning is needed, hand the issue to `workflow`, which may then choose `review` or another stage
-- when the user provides reasons or a preferred next action, pass that guidance through to `workflow` as evidence to evaluate, not as an instruction for you to implement directly unless the user is explicitly changing the workflow command itself
-- assume `implementation` should usually return only after any required execution reaches a workflow-meaningful state with evidence; treat `wait` as exceptional rather than the default Slurm path
+- do not inspect task-specific problem files, logs, configs, or code, ANY TYPE OF REASONING SHOULD BE delegated to the `workflow` agent, which may then choose `review` or another stage
+- when the user provides reasons or a preferred next action, ALWYAS directly pass that guidance through to `workflow` agent as evidence to evaluate, IT IS NOT instruction for you to implement directly
+- assume `implementation` agent should usually return only after any required execution reaches a workflow-meaningful state with evidence; treat `wait` as exceptional rather than the default Slurm path
+- only delegate fresh `implementation` agent if `workflow` agent suggests it with: `Next Stage`: `implementation (start fresh agent)`
 - preserve unrelated user changes and avoid broadening scope beyond the current full plan
 - prefer file tools over shell for reading and writing state files
 - avoid loading large data, logs, checkpoints, or result artifacts into context

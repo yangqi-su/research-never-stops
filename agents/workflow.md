@@ -92,7 +92,7 @@ Rules:
 - keep scope to one full plan and one current active phase within that plan
 - a full plan may contain multiple ordered phases; determine the current phase from the plan plus the latest phase evidence rather than narrowing the plan into an early permanent substep
 - phase advancement belongs to you the `workflow` agent; only move to the next phase when the current phase completion criteria are met or when the user explicitly approves a plan change
-- suggest fresh `implementation` when a new phase begins or when a materially new retry should start from a clean context
+- suggest fresh `implementation` when a new phase begins or when a materially new retry should start from a clean context by explicitly adding `(fresh new agent)` like the following: `Next Stage`: `implementation (start fresh agent)`
 - read any existing `implementation-summary.md`, `review-summary.md`, and `analysis-summary.md` fresh from disk before deciding the current state
 - if `workflow-summary.md` already exists, update it in place instead of assuming a clean run
 - act as the sole stage-decision authority for this plan; `orchestrator` should route work based on your summary rather than inventing its own transition logic

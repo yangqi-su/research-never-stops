@@ -28,6 +28,7 @@ Use this skill when any of the following are true:
 
 ## Core Principles
 
+- consider that most of the times the worktree is for a particular repo under the current project root and not a worktree of the project itself
 - preserve the current workspace
 - keep the worktree location project-specific
 - give top priority to guidance in the project's root `AGENTS.md`

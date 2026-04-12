@@ -3,7 +3,7 @@ description: Interprets meaningful outputs and evidence from all workflow phases
 mode: subagent
 model: openai/gpt-5.4-mini
 options:
-  reasoningEffort: high
+  reasoningEffort: xhigh
 temperature: 0.1
 permission:
   edit: allow
