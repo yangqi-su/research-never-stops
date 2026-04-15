@@ -34,6 +34,7 @@ Use this skill when any of the following are true:
 - use `/copilot-workflow-start`, `/copilot-workflow-resume`, and `/copilot-workflow-status` only when there is already a written Copilot plan
 - route those workflow commands into `copilot-orchestrator` rather than entering other Copilot agents directly
 - use `/copilot-status-init` and `/copilot-status-update` as direct Copilot memory maintenance entrypoints to `copilot-status`
+- use `/summary-init` and `/summary-update` when the shared root `STATUS.md` and `FIX.md` layer should be refreshed from both stacks
 
 ## Core Rules
 
@@ -59,8 +60,9 @@ Use this skill when any of the following are true:
 
 - Copilot plans live under `copilot/plans/active/` and `copilot/plans/archive/`
 - Copilot memory lives under `copilot/memory/`
+- shared root `STATUS.md` and `FIX.md` may be read as cross-stack summary entrypoints without treating root `memory/` as Copilot-owned
 - Copilot workflow session files such as `workflow-session.json` and `agent-sessions.json` live only inside Copilot run directories
-- do not read or write the root `plans/` or `memory/` trees unless the user explicitly asks for cross-stack comparison or migration work
+- do not read or write the root `plans/` or `memory/` trees broadly unless the user explicitly asks for cross-stack comparison or migration work
 
 ## Runtime Ownership
 

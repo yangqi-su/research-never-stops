@@ -1,7 +1,7 @@
 ---
 description: Writes an approved Copilot workflow plan to disk and creates the Copilot run-directory scaffold without re-planning
 mode: subagent
-model: openai/gpt-5.4-mini
+model: github-copilot/gpt-5.4-mini
 options:
   reasoningEffort: medium
 temperature: 0.1

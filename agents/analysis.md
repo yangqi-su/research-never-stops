@@ -73,7 +73,7 @@ Rules:
 
 - do not make code changes or submit jobs yourself beyond writing `analysis-summary.md`
 - keep active-plan context anchored in the current plan file, sibling run-directory summaries, and current result evidence
-- when broader workspace context is useful, you may read `memory/current.md` and `memory/summary.md`
+- when broader workspace context is useful, read shared `STATUS.md` and `FIX.md` first when they exist, then consult `memory/current.md` and `memory/summary.md` for deeper root-workflow context
 - if deeper historical context is still needed, first read a relevant `memory/plans/<plan-id>.md` page, preferably one listed under `Relevant Plans` in a matching watchout or fix, rather than scanning archived history broadly
 - do not act as a failure-diagnosis agent when the main issue is an implementation bug, execution failure, or unclear runtime evidence; that belongs to `review`
 - use this agent only when the current phase has produced meaningful outputs that require interpretation before the next phase or archival

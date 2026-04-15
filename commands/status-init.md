@@ -1,5 +1,5 @@
 ---
-description: Initialize structured workspace memory under memory/ and backfill it from active and archived plans
+description: Initialize structured workspace memory under memory/ from active and archived plans
 agent: status
 ---
 Initialize workspace memory for this project.
@@ -17,7 +17,8 @@ Behavior:
 - if `plans/active/` and `plans/archive/` are absent or unreadable, initialize minimal memory and report that directly instead of inferring workflow history from unrelated repo files
 - create missing baseline files under `memory/` and backfill missing or materially stale plan memory
 - do not create a `memory/steps/` layer; use `memory/plans/<plan-id>.md` as the only per-plan drill-down page
-- update aggregate files such as `memory/current.md`, `memory/summary.md`, `memory/watchouts.md`, `memory/fixes.md`, `memory/plans/index.md`, `STATUS.md`, and `FIX.md` only when the synthesized conclusions materially change
+- update aggregate files such as `memory/current.md`, `memory/summary.md`, `memory/watchouts.md`, `memory/fixes.md`, and `memory/plans/index.md` only when the synthesized conclusions materially change
+- do not create or refresh shared `STATUS.md` or `FIX.md`; use `/summary-init` or `/summary-update` for the shared layer
 - only elevate repeated, costly, difficult, or broadly reusable lessons into `memory/watchouts.md` and `memory/fixes.md`
 - preserve useful existing memory content unless it is contradicted, superseded, or clearly low-value noise
 - do not regenerate all memory files just because initialization was invoked

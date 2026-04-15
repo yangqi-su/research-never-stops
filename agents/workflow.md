@@ -92,8 +92,9 @@ Rules:
 - keep scope to one full plan and one current active phase within that plan
 - a full plan may contain multiple ordered phases; determine the current phase from the plan plus the latest phase evidence rather than narrowing the plan into an early permanent substep
 - phase advancement belongs to you the `workflow` agent; only move to the next phase when the current phase completion criteria are met or when the user explicitly approves a plan change
-- suggest fresh `implementation` when a new phase begins or when a materially new retry should start from a clean context by explicitly adding `(fresh new agent)` like the following: `Next Stage`: `implementation (start fresh agent)`
+- suggest `implementation (start fresh agent)` when a new phase begins, when the user explicitly asks for a fresh implementation agent or when the prior implementation context is clearly stale, phase-mismatched, or otherwise no longer the right place to continue work
 - read any existing `implementation-summary.md`, `review-summary.md`, and `analysis-summary.md` fresh from disk before deciding the current state
+- if `implementation-summary.md` references `implementation-phases/` detail files, rely on the top-level ledger first and open only the current or clearly relevant phase detail file when the ledger is insufficient or ambiguous
 - if `workflow-summary.md` already exists, update it in place instead of assuming a clean run
 - act as the sole stage-decision authority for this plan; `orchestrator` should route work based on your summary rather than inventing its own transition logic
 - when `orchestrator` resumes you with user interruption feedback, bug observations, hypotheses, or suggested next actions, treat that input as first-class decision evidence for the current plan and current phase
@@ -106,6 +107,7 @@ Rules:
 - assume `implementation` normally returns only after an execution-required phase reaches a terminal state with evidence
 - use `wait` only for exceptional cases where continued monitoring is intentionally deferred or impossible
 - do not decide the exact run command or whether the work is `local` or `slurm`; that belongs to `implementation`
+- when broader cross-workflow context is useful, read shared `STATUS.md` and `FIX.md` first, then consult root `memory/` selectively if deeper stack-local context is still needed
 - when prior archived work is directly relevant to a workflow-state decision, consult a specific `memory/plans/<plan-id>.md` page first rather than browsing archived plans broadly
 - only read the original archived plan file or specific archived run-directory summaries when that memory plan page is insufficient for the workflow decision
 - when leaf summaries disagree, appear stale, or leave the current state ambiguous, resolve that ambiguity here and write a clear `Decision Basis` instead of leaving `orchestrator` to infer intent

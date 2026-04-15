@@ -17,7 +17,8 @@ Behavior:
 - prioritize active Copilot plans when updating `copilot/memory/current.md`
 - use archived Copilot plans heavily for durable fixes, watchouts, and plan history
 - if Copilot memory has not been initialized yet, initialize it first and then continue the refresh
-- do not edit root `memory/`, `STATUS.md`, or `FIX.md`
+- do not edit root `memory/`
+- do not edit shared root `STATUS.md` or `FIX.md`; use `/summary-update` when the shared layer should be refreshed
 - do not create a second compatibility-entrypoint layer under `copilot/`
 - treat `$ARGUMENTS` as an optional plan selector, scope hint, or user preference about what to emphasize
 

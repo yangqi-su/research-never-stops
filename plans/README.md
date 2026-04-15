@@ -73,6 +73,7 @@ If the saved `workflow_task_id` cannot be resumed, `orchestrator` should create 
 - `review` writes `review-summary.md` only when deeper diagnosis is needed.
 - `analysis` writes `analysis-summary.md` when the current phase has meaningful outputs that need interpretation before the next phase or archival.
 - `status` is a project-memory subagent that primary agents may invoke explicitly when workspace memory under `memory/` should be initialized or refreshed.
+- `summary-link` is a shared-summary subagent that may be invoked explicitly to refresh root `STATUS.md` and `FIX.md` from `memory/` and `copilot/memory/`.
 
 ## Workspace memory
 
@@ -84,7 +85,7 @@ If the saved `workflow_task_id` cannot be resumed, `orchestrator` should create 
 - exact plan and run-directory provenance should live primarily in `memory/index.json` and the canonical plan/run-directory files
 - agents should normally reach archived context through a relevant `memory/plans/<plan-id>.md` page before reading the original archived plan or run-directory summaries
 - top-level memory such as `memory/current.md` and `memory/summary.md` should stay story-first and path-light
-- root `STATUS.md` and `FIX.md` should stay short and point readers into `memory/`
+- root `STATUS.md` and `FIX.md` should stay short and point readers into both `memory/` and `copilot/memory/` when Copilot memory exists
 
 ## Output placement
 

@@ -1,7 +1,7 @@
 ---
 description: Runs the Copilot workflow loop, including intake, clarification, planning delegation, verbatim plan handoff, approvals, and workflow-directed stage dispatch
 mode: primary
-model: openai/gpt-5.4
+model: github-copilot/gpt-5.4
 options:
   reasoningEffort: medium
 temperature: 0.1
@@ -89,7 +89,8 @@ Copilot paths:
 - active plans live under `copilot/plans/active/`
 - archived plans live under `copilot/plans/archive/`
 - Copilot memory lives under `copilot/memory/`
-- never use the root `plans/` or `memory/` trees unless the user explicitly asks for a cross-stack comparison
+- shared `STATUS.md` and `FIX.md` are allowed as cross-stack summary entrypoints
+- never use the root `plans/` or `memory/` trees broadly unless the user explicitly asks for a cross-stack comparison
 - internal automation must prefer direct agent delegation over internal command chaining
 
 Plan handoff rules:
@@ -120,14 +121,17 @@ Workflow loop rules:
 4. Read the `copilot-workflow` decision.
 5. If the next stage is `copilot-implementation (resume existing agent)` and `Auto Continue` is `yes`, try to resume the current-phase implementation `task_id` recorded in `agent-sessions.json`; if it is missing, stale, phase-mismatched, or cannot be resumed, resume `copilot-workflow` with that evidence instead of guessing.
 6. If the next stage is `copilot-implementation (start fresh agent)`, `copilot-review`, or `copilot-analysis` and `Auto Continue` is `yes`, invoke that subagent exactly as directed and record its `task_id` in `agent-sessions.json`.
-7. If the next stage is plain `copilot-implementation` and `Auto Continue` is `yes`, prefer a fresh implementation session unless `copilot-workflow` explicitly directed resume-existing behavior, and record the new `task_id` in `agent-sessions.json`.
+7. If the next stage is plain `copilot-implementation` and `Auto Continue` is `yes`, prefer resuming the saved implementation session for the current phase when it is present and still phase-compatible; otherwise start a fresh implementation session and record the resulting `task_id` in `agent-sessions.json`.
 8. Resume the same `copilot-workflow` session after every leaf stage.
-9. If any stage returns or implies `needs-user`, utilize the  `question` tool to ask user for input instead of ending the session immediately when a short answer can unblock progress.
-10. If `copilot-workflow` recommends `wait`, do not stop immediately; convert that justified `wait` recommendation into one focused `question` with choices such as `Continue monitoring now`, `Pause here and resume later`, or `Stop and summarize current state`.
-11. If the user chooses to continue monitoring now, keep the current Copilot session alive and resume the workflow loop.
-12. Only stop at `wait` after the user explicitly chooses to pause or stop.
-13. Continue until a terminal state is reached.
-14. do not use python to update session files, use `date` and `edit` tool
+9. If any stage returns or implies `needs-user`, utilize the `question` tool to ask the user for input instead of ending the session immediately when a short answer can unblock progress.
+10. If any stage returns or implies `blocked`, ask one focused `question` when a short user decision or instruction could unblock progress instead of immediately summarizing and stopping.
+11. Treat replies to workflow-loop `needs-user` or `blocked` questions, including freeform custom answers, as in-session control input for the current Copilot workflow rather than as a reason to end the conversation.
+12. Unless the user clearly says to stop, pause, cancel, or defer, immediately resume the same `copilot-workflow` session with the user's exact reply plus the triggering `needs-user` or `blocked` context and let `copilot-workflow` decide the next stage.
+13. If `copilot-workflow` recommends `wait`, do not stop immediately; convert that justified `wait` recommendation into one focused `question` with choices such as `Continue monitoring now`, `Pause here and resume later`, or `Stop and summarize current state`.
+14. If the user chooses to continue monitoring now, keep the current Copilot session alive and resume the workflow loop.
+15. Only stop at `wait`, `blocked`, or `needs-user` after the user explicitly chooses to pause, stop, cancel, or leave the issue unresolved for later.
+16. Continue until a terminal state is reached.
+17. do not use python to update session files, use `date` and `edit` tool
 
 Approval rules:
 
@@ -229,6 +233,8 @@ Rules:
 - do not resume a saved implementation session unless `copilot-workflow` explicitly directs `copilot-implementation (resume existing agent)`
 - when a leaf-agent session ends, update `agent-sessions.json` to record the latest status and append a concise history entry when useful
 - do not ask a `wait` continuation question for short normal queue delays or early healthy execution; let implementation and workflow continue monitoring internally first
+- when a workflow-loop `blocked` or `needs-user` question receives a custom or explicit continue-style reply, do not summarize and stop first; resume `copilot-workflow` immediately unless the user clearly chose to stop, pause, cancel, or defer
+- when resuming `copilot-workflow` after a workflow-loop `blocked` or `needs-user` question, pass along the user's exact reply and the triggering context as first-class workflow evidence
 - do not stop and ask the user what stage to run next between normal non-terminal stages
 - do not depend on non-runtime Copilot docs for entry rules, phase rules, or summary behavior
 - preserve unrelated user changes and avoid broadening scope beyond the current Copilot plan

@@ -1,7 +1,7 @@
 ---
 description: Implements the current approved Copilot plan phase, performs lightweight validation, decides local versus Slurm execution, runs work when needed, and writes a structured implementation summary
 mode: subagent
-model: openai/gpt-5.4
+model: github-copilot/gpt-5.4
 options:
   reasoningEffort: high
 temperature: 0.1
@@ -14,8 +14,12 @@ permission:
     "*": allow
     "ls": allow
     "ls *": allow
+    "pwd": allow
+    "pwd *": allow
     "grep *": allow
     "rg *": allow
+    "date*": allow
+    "mkdir *implementation-phases*": allow
     "wc *": allow
     "head *": allow
     "tail *": allow
@@ -47,6 +51,60 @@ Write `implementation-summary.md` using this exact section order:
 
 ```md
 # Implementation Summary
+
+- `Plan ID`:
+- `Plan`:
+- `Run Directory`:
+- `Path State`:
+- `Status`:
+- `Phase`:
+- `Timestamp`:
+
+## Overall State
+
+- short bullets summarizing the current implementation state across completed and active phases
+
+## Phase Index
+
+### Phase NN - short phase name
+
+- `Status`:
+- `Last Updated`:
+- `Detail File`: `implementation-phases/phase-NN.md`
+
+#### Goal
+
+- 1-3 short bullets
+
+#### Key Results
+
+- 2-6 short bullets covering the meaningful changes, findings, decisions, or outcomes from this phase
+
+#### Validation
+
+- short bullets for the main validation outcomes only, or `none`
+
+#### Execution Snapshot
+
+- `Run Mode`: `none`, `local`, or `slurm`
+- `Execution Status`: `not-run`, `running`, `success`, `failed`, or `blocked`
+- `Job ID`: scheduler id or `none`
+- `Primary Output Location`: plan run directory path or explicit external path
+
+#### Risks or Limitations
+
+- short bullets or `none`
+
+#### Next Step
+
+- `Suggested Workflow State`: `copilot-implementation`, `copilot-review`, `copilot-analysis`, `wait`, `blocked`, `needs-user`, or `archive`
+- `Next Hint`: short note for `copilot-workflow`
+```
+
+Write the detailed record for the current phase to `implementation-phases/phase-NN.md` using this exact section order:
+
+```md
+# Phase Implementation Detail
 
 - `Plan ID`:
 - `Plan`:
@@ -98,14 +156,18 @@ Write `implementation-summary.md` using this exact section order:
 ```
 
 Rules:
-- MOST IMPORTANT: DO NOT OVERWRITE implementation summaries of earlier phases!!
+- MOST IMPORTANT: DO NOT OVERWRITE earlier phase records.
 - treat the approved Copilot plan file plus the latest `workflow-summary.md` phase selection as the source of truth
-- keep active-plan context anchored in the current plan file, `copilot/memory/watchouts.md`, `copilot/memory/fixes.md`, and sibling run-directory summaries when they exist
+- keep active-plan context anchored in the current plan file, shared `STATUS.md`, shared `FIX.md`, `copilot/memory/watchouts.md`, `copilot/memory/fixes.md`, and sibling run-directory summaries when they exist
+- read shared `STATUS.md` and `FIX.md` first when they exist for cross-workflow context, then use `copilot/memory/watchouts.md` and `copilot/memory/fixes.md` for Copilot-specific pitfalls
 - preserve existing project conventions and unrelated user changes
 - keep edits small, reviewable, and directly tied to the current phase
 - perform the minimum validation needed to confirm the change is wired correctly before or alongside execution
 - decide and write the execution route before launching any run
-- always write out a partial implementation summary before full execution, except for dry inspection-only phases
+- keep `implementation-summary.md` detailed enough for `copilot-workflow` and `copilot-status` to understand what happened without opening every phase detail file
+- use `implementation-phases/` inside the run directory for detailed per-phase records; create it if missing
+- choose a stable `phase-NN.md` filename from the current phase order when it is clear from the plan or workflow summary; otherwise derive a stable phase filename from the current phase label and keep reusing it for that phase
+- if a partial summary is needed before execution, write it into the current phase block and the current phase detail file, then replace it with the fuller coherent phase state as execution progresses
 - when the current phase executes on Slurm, keep monitoring the job until a terminal state is reached before finalizing `implementation-summary.md`
 - choose `slurm` for any substantive experiment, sweep, batch, multi-step job, deep-learning work, or GPU-requiring work unless it is clearly tiny and short-lived
 - when the current phase needs GPU-backed Slurm execution, load and follow the `submitting-slurm-gpu-jobs` skill
@@ -136,8 +198,14 @@ Rules:
 - keep `question` prompts concise, single-purpose, and normally under 200 words
 - do not paste large code excerpts, logs, plan sections, or summary sections into `question`
 - always write `implementation-summary.md` in the plan's sibling run directory using the exact inline template above
-- if `implementation-summary.md` already exists, do not re-write it from scratch and do not remove prior phase content
-- add the latest implementation state to the overall summary while preserving earlier phase records
+- preserve earlier phase blocks and their detail files
+- treat `implementation-summary.md` as a compact structured ledger across phases, not as a full accumulated narrative
+- when a new phase starts, add one new phase block to `implementation-summary.md` and create one new detail file for that phase
+- when updating the same phase again, rewrite that phase block in `implementation-summary.md` so it reflects the coherent current state of the phase as a whole
+- when updating the same phase again, rewrite that phase's detail file in place so it reflects the coherent current state of the phase as a whole
+- do not append multiple full summaries for the same phase to either file
+- fold same-phase retries, revised decisions, monitoring updates, and redirected work into the current coherent phase record instead of preserving every intermediate partial state verbatim
+- keep rich execution evidence, detailed routing rationale, retries, monitoring notes, and same-phase narrative in the phase detail file rather than the top-level phase ledger
 - do not attempt to write other agents' summary files
 - do not invoke other agents
 

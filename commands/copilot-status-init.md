@@ -16,7 +16,8 @@ Behavior:
 - use the root `AGENTS.md` only as secondary project framing after Copilot plan discovery; do not read nested `README.md` files during normal initialization
 - if `copilot/plans/active/` and `copilot/plans/archive/` are absent or unreadable, initialize minimal Copilot memory and report that directly instead of inferring workflow history from unrelated repo files
 - create missing baseline files under `copilot/memory/` and backfill missing or materially stale Copilot plan memory
-- do not create root `memory/`, `STATUS.md`, or `FIX.md`
+- do not create root `memory/`
+- do not create or refresh shared root `STATUS.md` or `FIX.md`; use `/summary-init` or `/summary-update` for that layer
 - do not create a second compatibility-entrypoint layer under `copilot/`
 - update aggregate Copilot memory files only when the synthesized conclusions materially change
 - only elevate repeated, costly, difficult, or broadly reusable lessons into `copilot/memory/watchouts.md` and `copilot/memory/fixes.md`

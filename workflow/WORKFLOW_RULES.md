@@ -39,6 +39,7 @@ These rules define the default behavior for the custom global workflow agents.
 - `review` reads summaries, diagnoses problems, suggests fixes, and writes `review-summary.md` only when escalation is needed.
 - `analysis` reads the latest plan and phase evidence, interprets meaningful outputs, and writes `analysis-summary.md` when the current phase needs a decision-ready interpretation before the next phase or archival.
 - `status` is outside the normal command-driven workflow loop and should only be invoked explicitly by a primary agent for project-memory initialization or refreshes.
+- `summary-link` is outside the normal command-driven workflow loop and should only be invoked explicitly to refresh shared root `STATUS.md` and `FIX.md` from stack-local memory.
 
 ## Plan and phase granularity
 

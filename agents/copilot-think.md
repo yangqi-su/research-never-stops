@@ -1,7 +1,7 @@
 ---
 description: Frames ambiguous Copilot workflow tasks, compares candidate approaches, and recommends the next bounded plan shape before full Copilot planning
 mode: subagent
-model: openai/gpt-5.4
+model: github-copilot/gpt-5.4
 options:
   reasoningEffort: high
 temperature: 0.2

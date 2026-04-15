@@ -13,4 +13,5 @@ Behavior:
 - if there is no suitable active Copilot plan, stop and tell the user to use `/copilot-draft-plan` followed by `/copilot-write-plan` first
 - keep this flow isolated from the root workflow stack
 - create or resume `workflow-session.json` for that Copilot plan
-- keep delegating automatically according to `copilot-workflow` stage decisions until `archive`, `wait`, `blocked`, or `needs-user`
+- when `copilot-workflow` reaches `blocked` or `needs-user`, ask a focused question and, unless the user explicitly pauses, stops, cancels, or defers, relay the reply back into the same workflow session and continue the loop
+- keep delegating automatically according to `copilot-workflow` stage decisions until `archive`, an explicitly accepted `wait`, or unresolved `blocked` or `needs-user` after user deferral

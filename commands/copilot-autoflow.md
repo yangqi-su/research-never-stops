@@ -22,6 +22,7 @@ Behavior:
 - create or resume the Copilot workflow sidecar only after the plan is written and execution is approved
 - when workflow reaches a justified `wait`, ask the user whether to continue monitoring inside the current session before stopping
 - keep required behavior inside Copilot commands, agents, and skills rather than relying on Copilot reference docs
-- keep running until a terminal state is reached: `archive`, `wait`, `blocked`, `needs-user`, or user refusal
+- when workflow reaches `blocked` or `needs-user`, ask a focused question and, unless the user explicitly pauses, stops, cancels, or defers, relay the reply back into the same workflow session and continue the loop
+- keep running until a true terminal state is reached: `archive`, an explicitly accepted `wait`, unresolved `blocked` or `needs-user` after user deferral, or user refusal
 
 When you stop, report the Copilot plan path, run directory, current state, and key evidence.

@@ -1,7 +1,7 @@
 ---
 description: Interprets meaningful Copilot workflow outputs and recommends the next Copilot workflow state
 mode: subagent
-model: openai/gpt-5.4
+model: github-copilot/gpt-5.4
 options:
   reasoningEffort: high
 temperature: 0.1
@@ -74,7 +74,7 @@ Rules:
 
 - do not make code changes or submit jobs yourself beyond writing `analysis-summary.md`
 - keep context anchored in the current plan file, sibling run-directory summaries, and current result evidence
-- when broader context is useful, you may read `copilot/memory/current.md` and `copilot/memory/summary.md`
+- when broader context is useful, read shared `STATUS.md` and `FIX.md` first when they exist, then consult `copilot/memory/current.md` and `copilot/memory/summary.md`
 - use this agent only when the current phase has produced meaningful outputs that require interpretation before the next phase or archival
 - focus on what the completed work has taught us, what remains uncertain, and whether the overall workflow is moving toward its goal
 - prefer lightweight result evidence such as concise summaries, metrics files, manifest files, small tables, and selected logs rather than large raw artifacts

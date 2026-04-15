@@ -78,6 +78,7 @@ Loop rules:
 - do not diagnose failures, reinterpret meaningful outputs, or make archival decisions yourself; those belong to `review`, `analysis`, and `workflow`
 - do not override a valid `workflow` decision just because another summary suggests a different direction; resume `workflow` if the state appears stale, ambiguous, or contradictory
 - if the user interrupts an active workflow run with bug observations, concerns, hypotheses, or suggested next actions, treat that input as intervention context for `workflow` rather than as a request for orchestrator-side diagnosis
+- if broader cross-workflow context is explicitly useful, you may read shared `STATUS.md` and `FIX.md` before any stack-local memory, but do not let those shared files override active workflow state or `workflow-summary.md`
 - before resuming `workflow`, read only the minimum routing state needed to identify the plan and session, such as the active plan path, `workflow-session.json`, `workflow-summary.md`, and at most the latest leaf summary needed to tell whether the workflow state is stale
 - do not inspect task-specific problem files, logs, configs, or code, ANY TYPE OF REASONING SHOULD BE delegated to the `workflow` agent, which may then choose `review` or another stage
 - when the user provides reasons or a preferred next action, ALWYAS directly pass that guidance through to `workflow` agent as evidence to evaluate, IT IS NOT instruction for you to implement directly

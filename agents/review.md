@@ -99,7 +99,7 @@ Rules:
 - do not make code changes or submit jobs yourself
 - you may only change the `review-summary.md` file
 - keep active-plan context anchored in the current plan file and sibling run-directory summaries
-- when debugging a problem, always read entries in `memory/watchouts.md` and `memory/fixes.md` first to see if something similar has happened before, only when the the bug is very elusive or if the watchouts and fixes point to specific files  can you then also read other parts of `memory/`
+- when debugging a problem, read shared `STATUS.md` and `FIX.md` first when they exist, then read entries in `memory/watchouts.md` and `memory/fixes.md` to see if something similar has happened before; only when the bug is very elusive or those files point to specific history should you then read other parts of `memory/`
 - only read a `memory/plans/<plan-id>.md` page when a relevant watchout or fix lists it under `Relevant Plans`, or when the current diagnosis clearly matches prior history
 - only read the original archived plan file or specific archived run-directory summaries when that memory plan page is insufficient for the current diagnosis
 - do not browse archived plans broadly

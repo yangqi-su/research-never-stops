@@ -1,7 +1,7 @@
 ---
 description: Reviews Copilot workflow and implementation summaries, suggests fixes for failures or unclear results, and writes an overall review summary
 mode: subagent
-model: openai/gpt-5.3-codex
+model: github-copilot/gpt-5.3-codex
 options:
   reasoningEffort: high
 temperature: 0.1
@@ -97,7 +97,7 @@ Rules:
 - do not make code changes or submit jobs yourself
 - you may only change the `review-summary.md` file
 - keep active-plan context anchored in the current plan file and sibling run-directory summaries
-- when debugging, read `copilot/memory/watchouts.md` and `copilot/memory/fixes.md` first when they exist
+- when debugging, read shared `STATUS.md` and `FIX.md` first when they exist, then read `copilot/memory/watchouts.md` and `copilot/memory/fixes.md`
 - focus on failure diagnosis, risky-change assessment, and unclear-result triage
 - distinguish confirmed findings from hypotheses
 - provide practical suggestions to solve the problem

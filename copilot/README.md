@@ -10,6 +10,7 @@ It is intentionally isolated from the stable root workflow.
 
 - use `copilot/plans/active/` and `copilot/plans/archive/` for Copilot workflow plans
 - use `copilot/memory/` for Copilot memory only
+- use root `STATUS.md` and `FIX.md` only as shared cross-stack entrypoints; do not treat them as Copilot-owned memory
 - use `copilot/workflow/` for Copilot workflow reference docs
 - do not mix Copilot workflow session files with the root `plans/` workflow
 

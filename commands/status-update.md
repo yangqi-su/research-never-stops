@@ -15,7 +15,7 @@ Behavior:
 - update only the affected memory artifacts under `memory/`, including relevant per-plan files, `memory/index.json`, and aggregate files whose conclusions materially changed
 - do not recreate any step-level memory layer under `memory/`
 - leave unchanged files untouched; do not rewrite top-level summaries only because a scan occurred
-- refresh short compatibility entrypoints at `STATUS.md` and `FIX.md` only when their linked summaries or main conclusions changed
+- do not edit shared `STATUS.md` or `FIX.md`; use `/summary-update` when the shared layer should be refreshed
 - prioritize active plans when updating the current workspace view
 - use archived plans heavily for durable fixes, watchouts, and plan history
 - only elevate repeated, costly, difficult, or broadly reusable lessons into `memory/watchouts.md` and `memory/fixes.md`

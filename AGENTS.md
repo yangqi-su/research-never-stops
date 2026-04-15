@@ -20,7 +20,8 @@ Treat `orchestrator` as the dedicated primary agent for this workflow.
 - `implementation` owns code changes, lightweight validation, execution routing, actual local or Slurm execution, and monitoring for the current plan phase, and writes `implementation-summary.md`.
 - `review` is an optional escalation agent that reads the latest summaries, suggests fixes when needed, and writes `review-summary.md`.
 - `analysis` interprets meaningful outputs from the current plan phase and writes `analysis-summary.md` when the workflow needs a decision-ready interpretation before the next phase or archival.
-- `status` is a research-memory subagent that maintains canonical workspace memory under `memory/` and refreshes `STATUS.md` and `FIX.md` as compatibility entrypoints when a primary agent explicitly asks for a memory refresh.
+- `status` is a research-memory subagent that maintains canonical workspace memory under `memory/`.
+- `summary-link` is a shared-memory bridge agent that synthesizes root `STATUS.md` and `FIX.md` from `memory/` and `copilot/memory/` when the shared layer is explicitly refreshed.
 - `think` is an exploratory research-framing subagent that helps `plan` or another primary agent refine ambiguous, multi-repo, or method-comparison-heavy work before full plan drafting.
 
 ## Invocation model
@@ -57,16 +58,21 @@ Treat `orchestrator` as the dedicated primary agent for this workflow.
 ## Project memory
 
 - `status` is the dedicated subagent for maintaining canonical workspace memory under `memory/`.
+- `summary-link` is the dedicated subagent for maintaining shared root `STATUS.md` and `FIX.md` from the stack-local memory stores.
 - `status` should refresh memory from fresh evidence on disk and should not act as an execution, analysis, review, or orchestration agent.
 - `status` should read both `plans/active/` and `plans/archive/`, starting from plan files and run-directory summaries before broader repo context.
 - `status` should keep concise narrative memory for fast understanding, with lightweight drill-down pointers in markdown files and exact provenance primarily in `memory/index.json` and canonical plan/run-directory files.
+- `summary-link` should read `memory/` and `copilot/memory/` first and should not scan plan trees directly unless the memory stores are missing or insufficient.
+- `summary-link` should not rewrite stack-local memory; it only maintains shared `STATUS.md` and `FIX.md`.
+- workflow agents may read shared `STATUS.md` and `FIX.md` as first-pass cross-workflow context before drilling into stack-local memory.
 - primary planning agents may read `memory/current.md` and `memory/summary.md` as concise workspace context before drilling into deeper evidence.
 - `implementation` and `review` should primarily read relevant entries in `memory/watchouts.md` and `memory/fixes.md`, then follow pointers into `memory/plans/` when needed; only read canonical archived plan summaries if the memory plan page is insufficient.
 - `analysis` may read `memory/current.md` and `memory/summary.md` when broader context is useful, and should normally reach archived history through a relevant `memory/plans/<plan-id>.md` page before reading original archived summaries.
 - archived workflow history should normally be accessed through `memory/plans/<plan-id>.md` first, not by scanning `plans/archive/` directly.
 - agents should not read all of `memory/` by default; memory access should stay selective and role-appropriate.
-- root `STATUS.md` and `FIX.md` should remain as short compatibility entrypoints that point into `memory/`.
+- root `STATUS.md` and `FIX.md` should remain as short shared cross-workflow entrypoints that point into both `memory/` and `copilot/memory/`.
 - explicit memory entrypoints should include `/status-init` and `/status-update`.
+- explicit shared-summary entrypoints should include `/summary-init` and `/summary-update`.
 - Any primary agent may explicitly invoke `status` when a memory refresh is useful.
 
 ## Safety

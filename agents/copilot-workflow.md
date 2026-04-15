@@ -1,7 +1,7 @@
 ---
 description: Inspects one active Copilot plan, updates Copilot workflow status, recommends the next stage, and archives the plan when complete
 mode: subagent
-model: openai/gpt-5.4-mini
+model: github-copilot/gpt-5.4-mini
 options:
   reasoningEffort: high
 temperature: 0.1
@@ -91,9 +91,10 @@ Rules:
 - keep scope to one full Copilot plan and one current active phase within that plan
 - a full Copilot plan may contain multiple ordered phases; determine the current phase from the plan plus the latest phase evidence rather than narrowing the plan permanently into an early substep
 - phase advancement belongs to you; only advance when the current phase completion criteria are met or the user explicitly approves a plan change
-- use `copilot-implementation (start fresh agent)` when a new phase begins, when a materially new retry should start from clean context, or when the prior implementation session is no longer the right context
-- use `copilot-implementation (resume existing agent)` only when continuing the same active phase and the prior implementation session context is still the best place to continue work
+- use `copilot-implementation (resume existing agent)` whenever the saved implementation session is still coherent for the current plan state and continuing there is the lowest-friction way to preserve context
+- use `copilot-implementation (start fresh agent)` when new phase begins, when the user explicitly asks for a fresh implementation agent, when the prior implementation session is stale or phase-mismatched, or when the prior context is clearly no longer the right place to continue work
 - read any existing `implementation-summary.md`, `review-summary.md`, and `analysis-summary.md` fresh from disk before deciding the current state
+- if `implementation-summary.md` references `implementation-phases/` detail files, rely on the top-level ledger first and open only the current or clearly relevant phase detail file when the ledger is insufficient or ambiguous
 - if `workflow-summary.md` already exists, update it in place instead of assuming a clean run
 - act as the sole stage-decision authority for this Copilot plan
 - when `copilot-orchestrator` resumes you with user interruption feedback, bug observations, or a report that a leaf agent behaved incorrectly, treat that input as first-class decision evidence for the current phase
@@ -102,6 +103,7 @@ Rules:
 - use `wait` only for exceptional cases where continued monitoring is intentionally deferred and a concrete resume condition is available
 - do not require non-runtime docs to understand summary structure, path rules, or lifecycle rules
 - do not decide the exact run command or whether the work is `local` or `slurm`; that belongs to `copilot-implementation`
+- when broader cross-workflow context is useful, read shared `STATUS.md` and `FIX.md` first, then consult `copilot/memory/` selectively if deeper Copilot context is still needed
 - when leaf summaries disagree or appear stale, resolve the ambiguity here and write a clear `Decision Basis`
 - when progress depends on user intent, prefer a narrowly scoped `needs-user` decision over vague blockage
 - when producing `needs-user`, summarize the required user decision briefly and concretely so `copilot-orchestrator` can turn it into one focused `question`
