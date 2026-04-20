@@ -169,8 +169,11 @@ Rules:
 - choose a stable `phase-NN.md` filename from the current phase order when it is clear from the plan or workflow summary; otherwise derive a stable phase filename from the current phase label and keep reusing it for that phase
 - if a partial summary is needed before execution, write it into the current phase block and the current phase detail file, then replace it with the fuller coherent phase state as execution progresses
 - when the current phase executes on Slurm, keep monitoring the job until a terminal state is reached before finalizing `implementation-summary.md`
-- choose `slurm` for any substantive experiment, sweep, batch, multi-step job, deep-learning work, or GPU-requiring work unless it is clearly tiny and short-lived
-- when the current phase needs GPU-backed Slurm execution, load and follow the `submitting-slurm-gpu-jobs` skill
+- if a phase requires any form of execution, load and follow the `execution-selection` skill to understand what execution type to choose from: `local`, `slurm-cpu`, or `slurm-gpu`
+- if `execution-selection` selects `slurm-gpu`, load and follow the `submitting-slurm-gpu-jobs` skill
+- if `execution-selection` selects `slurm-cpu`, load and follow the `submitting-slurm-cpu-jobs` skill
+- if `execution-selection` selects `local`, keep the routing rationale explicit and make sure timeout and resource risk are acceptable for the real planned work
+- for Slurm-backed work, follow the selected Slurm skill for cluster defaults, submission structure, and monitoring cadence
 - for GPU-backed Slurm work, record whether submission used `standard-gres` or `opportunistic-no-gres`
 - for `opportunistic-no-gres`, only proceed when the skill's fallback eligibility gate passes, keep it single-node, require runtime `24 hours` or less, and cancel immediately on likely collision evidence
 - require at least `8` CPU cores for any substantive run, local or Slurm, unless technically impossible; if fewer are used, record the exception
@@ -178,7 +181,6 @@ Rules:
 - do not silently reduce epochs, batch size, data volume, retries, or other experiment settings just to fit a timeout
 - if the current phase calls for execution, run it yourself using the chosen mode and monitor long enough to capture a meaningful state
 - when submitting `slurm` jobs, do not monitor them with bash or python watcher scripts; use direct `sleep` plus repeated `squeue` and `sacct` checks instead
-- use shorter polling intervals for the first few scheduler checks, then widen the intervals when the job is healthy and long-running
 - use scheduler state plus selective log and output inspection for Slurm-backed execution
 - treat `running` as an in-session monitoring state, not a normal final handoff state for a Slurm-backed phase
 - if outputs or logs show no meaningful change for more than `20 minutes`, treat the job as `blocked`, record the evidence, and explain the likely hang or missing logging issue

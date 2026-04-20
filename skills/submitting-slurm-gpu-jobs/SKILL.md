@@ -51,6 +51,14 @@ Before submitting, determine or infer:
 
 If any of the above is unclear and materially affects safe submission, ask or stop with `needs-user`.
 
+## Cluster Defaults
+
+For this environment:
+
+- include `#SBATCH --partition=ihc,all`
+- include `#SBATCH --account=ihc`
+- add `#SBATCH --nodelist=ihc-h200-1` only when the run clearly requires that GPU node in this environment
+
 ## Submission Modes
 
 Always classify the chosen route as one of:
@@ -134,8 +142,14 @@ If the pre-launch recheck no longer shows the chosen GPUs as safely idle, exit i
 For all GPU Slurm jobs:
 
 - monitor scheduler state with `squeue` and `sacct`
+- do not use bash or Python watcher scripts; use direct `sleep` plus repeated scheduler checks
+- use shorter polling intervals for the first few checks, then widen the intervals when the job is healthy and long-running
 - monitor a heartbeat source such as a log file, metric file, checkpoint timestamp, or explicit progress counter
+- classify the run as queued normally, running with heartbeat, running without heartbeat, completed but unverified, blocked due to inactivity, or intentional wait
+- if outputs or logs show no meaningful change for more than `20 minutes`, treat the job as `blocked` and record the evidence
+- if the underlying script does not emit enough progress information to support that check, add or request lightweight progress logging before relying on the run
 - do not treat `COMPLETED` alone as success; verify expected outputs or success signals
+- use `wait` only when the job is healthy or normally queued, the next meaningful check is materially later, and a concrete resume condition is recorded
 
 Additional monitoring for `opportunistic-no-gres`:
 

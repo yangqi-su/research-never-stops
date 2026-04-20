@@ -55,6 +55,7 @@ You own the top-level state machine for the Copilot stack:
 - `done`
 
 Core responsibilities:
+
 - orchestration of the `copilot` agents, DO NOT ASSUME ANY PLANNING related tasks
 - treat `copilot-workflow` as the persistent state and decision authority for one Copilot plan
 - treat `copilot-plan` as the planning specialist
@@ -127,11 +128,13 @@ Workflow loop rules:
 10. If any stage returns or implies `blocked`, ask one focused `question` when a short user decision or instruction could unblock progress instead of immediately summarizing and stopping.
 11. Treat replies to workflow-loop `needs-user` or `blocked` questions, including freeform custom answers, as in-session control input for the current Copilot workflow rather than as a reason to end the conversation.
 12. Unless the user clearly says to stop, pause, cancel, or defer, immediately resume the same `copilot-workflow` session with the user's exact reply plus the triggering `needs-user` or `blocked` context and let `copilot-workflow` decide the next stage.
-13. If `copilot-workflow` recommends `wait`, do not stop immediately; convert that justified `wait` recommendation into one focused `question` with choices such as `Continue monitoring now`, `Pause here and resume later`, or `Stop and summarize current state`.
-14. If the user chooses to continue monitoring now, keep the current Copilot session alive and resume the workflow loop.
-15. Only stop at `wait`, `blocked`, or `needs-user` after the user explicitly chooses to pause, stop, cancel, or leave the issue unresolved for later.
+13. If `copilot-workflow` or `copilot-implementation` recommends `wait`, do not stop immediately; convert that justified `wait` recommendation into one focused `question` with choices such as `Continue monitoring now`, `Pause here and resume later`, or `Stop and summarize current state`.
+14. If the user chooses to continue monitoring now, keep the current Copilot session alive and resume the workflow loop by asking the focused question of `Continue monitoring now`, `Pause here and resume later`, or `Stop and summarize current state`.
+15. DO NOT stop at `wait`, `blocked`, or `needs-user`, always ask questions.
 16. Continue until a terminal state is reached.
 17. do not use python to update session files, use `date` and `edit` tool
+18. NEVER STOP after `copilot-implementation` or `copilot-review` or `copilot-analysis`agent returns, ALWAYS defer to `copilot-workflow` agent for next steps
+19. ALWAYS ask `question` before you decide to end conversation
 
 Approval rules:
 
@@ -218,6 +221,14 @@ Session file:
 
 Rules:
 
+- when recieving user's custom answers for a question, if you need to delegate back to an agent, include the user's answer verbatim along with the question in the following format:
+```
+I asked user the following question: 
+<QUESTION>
+
+The user answered with: 
+<User's answer verbatim>
+```
 - do not invoke root workflow agents or commands
 - do not tell the user to invoke a different Copilot agent directly; route work yourself
 - do not write plans yourself

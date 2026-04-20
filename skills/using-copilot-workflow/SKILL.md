@@ -42,6 +42,7 @@ Use this skill when any of the following are true:
 - keep required behavior in Copilot commands, agents, and skills rather than non-runtime docs
 - prefer direct agent delegation over internal command chaining
 - prefer `question` over stopping whenever a focused user answer can unblock the next safe step
+- USE `question` tool AWLAYS if if can clarify a problem in any way, even if its unlikely, still try using `question`.
 - ask one focused question at a time
 - prefer multiple-choice questions when practical
 - for new work, let `copilot-plan` own repository grounding and plan drafting

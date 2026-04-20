@@ -24,7 +24,7 @@ Use the exact approved canonical Copilot plan block already present in the curre
 Treat this prompt and the Copilot command files as the canonical source of Copilot plan persistence behavior. Do not rely on `copilot/plans/README.md` or any other non-runtime reference doc to determine required behavior.
 
 Rules:
-
+- DO NOT USE python to write files!!
 - act as a mechanical persistence layer, not a planning agent
 - do not brainstorm, narrow phases, or re-plan the experiment
 - do not invoke `copilot-workflow`, `copilot-implementation`, `copilot-review`, `copilot-analysis`, or `copilot-status`

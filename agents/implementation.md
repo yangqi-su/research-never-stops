@@ -173,16 +173,12 @@ Rules:
 - choose a stable `phase-NN.md` filename from the current phase order when it is clear from the plan or workflow summary; otherwise derive a stable phase filename from the current phase label and keep reusing it for that phase
 - if a partial summary is needed before execution, write it into the current phase block and the current phase detail file, then replace it with the fuller coherent phase state as execution progresses
 - when the current phase executes on Slurm, keep monitoring the job until a terminal state is reached before finalizing `implementation-summary.md`
-- decide whether the current phase should run `local` or `slurm`
-- choose `slurm` for any substantive experiment, sweep, batch, or multi-step job unless it is clearly tiny and short-lived
-- choose `slurm` when any relevant input file exceeds `1GB`
-- choose `slurm` when the job is highly parallelizable or can fan out safely across independent units of work
-- choose `slurm` for deep-learning or GPU-requiring work
-- when the current phase needs GPU-backed Slurm execution, load and follow the `submitting-slurm-gpu-jobs` skill
-- choose `slurm` when expected runtime may exceed `30 minutes`
-- choose `slurm` whenever a local run would likely hit bash timeouts, require repeated manual reruns, or tempt parameter weakening
-- when submitting `slurm` jobs, DO NOT EVER monitor the jobs using a bash script (timeouts of bash command in opencode a hard to control), just use `sleep` and `squeue`/`sacct` smartly for monitoring.
-- when monitoring a slurm submitted job, early sleep intervals between checks (first 5 intervals) can be short (60s-120s), after which estimate how long the job might be and increase sleep intervals by this order 180s, 300s, 600s, 1200s(max interval) to reduce number of checks, if number of checks becomes more than 15 then the job should be in `wait` status.
+- before launching execution, load and follow the `execution-selection` skill to choose `local`, `slurm-cpu`, or `slurm-gpu`
+- if `execution-selection` selects `slurm-gpu`, load and follow the `submitting-slurm-gpu-jobs` skill
+- if `execution-selection` selects `slurm-cpu`, load and follow the `submitting-slurm-cpu-jobs` skill
+- if `execution-selection` selects `local`, keep the routing rationale explicit and make sure timeout and resource risk are acceptable for the real planned work
+- for Slurm-backed work, follow the selected Slurm skill for cluster defaults, submission structure, and monitoring cadence
+- when submitting `slurm` jobs, do not use bash watcher scripts; use direct `sleep` plus repeated `squeue` and `sacct` checks
 - require at least `8` CPU cores for any substantive run, local or Slurm, unless technically impossible; if fewer are used, record the exception
 - prefer parallel execution when safe instead of serially looping through independent work
 - do not silently reduce epochs, batch size, sample count, data volume, retries, or other experiment settings just to fit a local timeout
@@ -194,6 +190,7 @@ Rules:
 - when monitoring a Slurm job, classify the run as one of: queued normally, running with heartbeat, running without heartbeat, completed but unverified, blocked due to inactivity, or intentional wait
 - for queued Slurm work, poll scheduler state on a consistent cadence and record whether the job is merely waiting for resources or appears stuck for a material reason
 - for running Slurm work, check scheduler state plus a heartbeat source such as a log path, metric file, checkpoint timestamp, or explicit progress counter
+- for CPU-only Slurm work, use the CPU Slurm skill's submission and monitoring guidance and record the requested cores and memory clearly
 - for GPU-backed Slurm work, use the skill's scheduler-first routing and record whether submission used `standard-gres` or `opportunistic-no-gres`
 - when monitoring a Slurm job, keep following the job until you can classify it as `success`, `failed`, or `blocked`, unless an intentional `wait` state is justified under the rules below
 - for `opportunistic-no-gres`, only proceed when the skill's fallback eligibility gate passes, keep it single-node, require runtime `24 hours` or less, and cancel immediately on likely collision evidence

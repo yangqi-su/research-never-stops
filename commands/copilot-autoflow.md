@@ -2,10 +2,10 @@
 description: Run the Copilot end-to-end intake, planning, approval, write, and workflow-start loop
 agent: copilot-orchestrator
 ---
-Enter Copilot orchestrator mode `autoflow` for this task: $ARGUMENTS
+Enter Copilot orchestrator mode `autoflow` for this task: <user instruction begins> $ARGUMENTS <user instruction ends>
 
 Behavior:
-
+- always pass the user instruction block above verbatim to the `copilot-plan`, DO NOT include Behavior
 - treat this as the one-shot end-to-end entrypoint for the Copilot workflow fork
 - remain the only entry agent and delegate all other Copilot work internally
 - clarify missing requirements with `question` rather than stopping whenever possible

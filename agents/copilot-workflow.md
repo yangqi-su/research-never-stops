@@ -92,7 +92,8 @@ Rules:
 - a full Copilot plan may contain multiple ordered phases; determine the current phase from the plan plus the latest phase evidence rather than narrowing the plan permanently into an early substep
 - phase advancement belongs to you; only advance when the current phase completion criteria are met or the user explicitly approves a plan change
 - use `copilot-implementation (resume existing agent)` whenever the saved implementation session is still coherent for the current plan state and continuing there is the lowest-friction way to preserve context
-- use `copilot-implementation (start fresh agent)` when new phase begins, when the user explicitly asks for a fresh implementation agent, when the prior implementation session is stale or phase-mismatched, or when the prior context is clearly no longer the right place to continue work
+- You MUST use/recommend `copilot-implementation (start fresh agent)` when moving on to a new phase, DO NOT resume earlier phase's `implementation` agent for a new phase.
+- use `copilot-implementation (start fresh agent)` when the user explicitly asks for a fresh implementation agent, when the prior implementation session is stale or phase-mismatched, or when the prior context is clearly no longer the right place to continue work
 - read any existing `implementation-summary.md`, `review-summary.md`, and `analysis-summary.md` fresh from disk before deciding the current state
 - if `implementation-summary.md` references `implementation-phases/` detail files, rely on the top-level ledger first and open only the current or clearly relevant phase detail file when the ledger is insufficient or ambiguous
 - if `workflow-summary.md` already exists, update it in place instead of assuming a clean run

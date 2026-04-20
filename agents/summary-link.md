@@ -23,6 +23,8 @@ permission:
     "git status": allow
     "git status *": allow
     "git log *": allow
+    "echo *": allow
+    "echo" : allow
   webfetch: ask
   task:
     "*": deny
