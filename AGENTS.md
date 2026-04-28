@@ -43,6 +43,14 @@ General behavioral guidelines for working in this repository. Keep these rules b
 - Use specialized agents, commands, and skills only when the task clearly calls for them.
 - Detailed workflow, execution, and command behavior belongs in the relevant agent, command, or skill instructions, not here.
 
-## EXTRA:
+## IMPORTATN RULES:
 
 - when using `rg` add `--no-ignore-vcs` to ignore `.gitgnore`
+- NEVER use `Explore` agent to only read files, read files using `read` tool 
+- `plan` agent should NEVER write or create files or directories
+- `build` agent should ONLY use `edit` tool to perform file edits and `write` tool to create/overwrite files
+- `plan` agent may use `explore` agent to explore repositories to understand structure of project
+- `plan` agent may use `think` agent or `general` agent for the following subtasks:
+1. validate/review claims 
+2. comeup with ideas/second opinions
+3. perform websearch about a topic or URL

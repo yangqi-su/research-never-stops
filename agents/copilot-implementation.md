@@ -124,6 +124,8 @@ Write the detailed record for the current phase to `implementation-phases/phase-
 
 ## Execution Decision
 
+> Fill Slurm-specific fields (Queue State, Heartbeat Source, Wait Justified, Resume Condition, Monitoring) based on the loaded execution skill's report-back requirements.
+
 - `Run Mode`: `none`, `local`, or `slurm`
 - `Decision Basis`: short factual reason for the routing choice
 - `Requested Cores`: integer core count or `none`
@@ -160,8 +162,13 @@ Rules:
 - treat the approved Copilot plan file plus the latest `workflow-summary.md` phase selection as the source of truth
 - keep active-plan context anchored in the current plan file, shared `STATUS.md`, shared `FIX.md`, `copilot/memory/watchouts.md`, `copilot/memory/fixes.md`, and sibling run-directory summaries when they exist
 - read shared `STATUS.md` and `FIX.md` first when they exist for cross-workflow context, then use `copilot/memory/watchouts.md` and `copilot/memory/fixes.md` for Copilot-specific pitfalls
+- when working inside a git repository, commit after each logical unit of work: after creating a new script, after editing a config, after fixing a bug, after adding a validation step — do not batch unrelated changes into one commit
+- write commit messages that reference the plan phase (e.g. `phase-02: add preprocessing script`) so that `git log` traces back to the plan
 - preserve existing project conventions and unrelated user changes
 - keep edits small, reviewable, and directly tied to the current phase
+- NEVER write outputs, intermediate files, logs, or artifacts to `/tmp/` or any system temp directory — all outputs go in the run directory
+- when scripts or tools default to `/tmp/`, redirect them to the run directory explicitly (e.g. `--output-dir`, `TMPDIR=`, `--tmpdir`, or environment variable overrides)
+- set the working directory for any script execution to the run directory so that relative output paths land there by default
 - perform the minimum validation needed to confirm the change is wired correctly before or alongside execution
 - decide and write the execution route before launching any run
 - keep `implementation-summary.md` detailed enough for `copilot-workflow` and `copilot-status` to understand what happened without opening every phase detail file
@@ -173,23 +180,11 @@ Rules:
 - if `execution-selection` selects `slurm-gpu`, load and follow the `submitting-slurm-gpu-jobs` skill
 - if `execution-selection` selects `slurm-cpu`, load and follow the `submitting-slurm-cpu-jobs` skill
 - if `execution-selection` selects `local`, keep the routing rationale explicit and make sure timeout and resource risk are acceptable for the real planned work
-- for Slurm-backed work, follow the selected Slurm skill for cluster defaults, submission structure, and monitoring cadence
-- for GPU-backed Slurm work, record whether submission used `standard-gres` or `opportunistic-no-gres`
-- for `opportunistic-no-gres`, only proceed when the skill's fallback eligibility gate passes, keep it single-node, require runtime `24 hours` or less, and cancel immediately on likely collision evidence
-- require at least `8` CPU cores for any substantive run, local or Slurm, unless technically impossible; if fewer are used, record the exception
-- prefer parallel execution when safe instead of serial loops across independent work
-- do not silently reduce epochs, batch size, data volume, retries, or other experiment settings just to fit a timeout
+- for Slurm-backed work, follow the selected Slurm skill for cluster defaults, submission structure, monitoring cadence, heartbeat checks, and all Slurm-specific rules — do not duplicate those rules here
 - if the current phase calls for execution, run it yourself using the chosen mode and monitor long enough to capture a meaningful state
-- when submitting `slurm` jobs, do not monitor them with bash or python watcher scripts; use direct `sleep` plus repeated `squeue` and `sacct` checks instead
-- use scheduler state plus selective log and output inspection for Slurm-backed execution
 - treat `running` as an in-session monitoring state, not a normal final handoff state for a Slurm-backed phase
-- if outputs or logs show no meaningful change for more than `20 minutes`, treat the job as `blocked`, record the evidence, and explain the likely hang or missing logging issue
-- do not consider Slurm `COMPLETED` alone sufficient evidence of success; verify expected outputs or success signals exist
 - if local execution is chosen, record why `slurm` was not appropriate and why timeout risk is acceptable
 - if the current phase should not run yet, record `Run Mode: none` and explain why
-- only use `wait` when the job is healthy or normally queued, the next meaningful check is materially later, and a concrete resume condition is recorded
-- do not use `wait` for short normal queue delays, early startup, or healthy jobs likely to complete soon
-- do not use `wait` when the real state is ambiguous; continue monitoring or use `blocked` instead
 - when `wait` is appropriate, record it clearly for `copilot-workflow` without assuming that it ends the user-facing session
 - keep execution-side artifacts such as Slurm scripts, concise logs, command snapshots, config snapshots, and readiness-test outputs in the Copilot run directory by default
 - allow large or canonical experiment results outside the run directory only when the plan explicitly names the destination or the user has approved it

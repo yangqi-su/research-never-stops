@@ -1,10 +1,10 @@
 ---
 description: Interprets meaningful outputs and evidence from all workflow phases completed, records what was learned, and recommends the next workflow state
 mode: subagent
-model: openai/gpt-5.4-mini
-options:
-  reasoningEffort: xhigh
-temperature: 0.1
+model: minimax-coding-plan/MiniMax-M2.7
+temperature: 1.0
+top_p: 0.95
+top_k: 40
 permission:
   edit: allow
   bash:
@@ -73,8 +73,8 @@ Rules:
 
 - do not make code changes or submit jobs yourself beyond writing `analysis-summary.md`
 - keep active-plan context anchored in the current plan file, sibling run-directory summaries, and current result evidence
-- when broader workspace context is useful, read shared `STATUS.md` and `FIX.md` first when they exist, then consult `memory/current.md` and `memory/summary.md` for deeper root-workflow context
-- if deeper historical context is still needed, first read a relevant `memory/plans/<plan-id>.md` page, preferably one listed under `Relevant Plans` in a matching watchout or fix, rather than scanning archived history broadly
+- when broader workspace context is useful, read shared `STATUS.md` and `FIX.md` first when they exist, then consult `copilot/memory/current.md` and `copilot/memory/summary.md` for deeper cross-family workflow context
+- if deeper historical context is still needed, first read a relevant `copilot/memory/plans/<plan-id>.md` page, preferably one listed under `Relevant Plans` in a matching watchout or fix, rather than scanning archived history broadly
 - do not act as a failure-diagnosis agent when the main issue is an implementation bug, execution failure, or unclear runtime evidence; that belongs to `review`
 - use this agent only when the current phase has produced meaningful outputs that require interpretation before the next phase or archival
 - do not use this agent for pure scaffolding, config-only, or code-only steps with no meaningful outputs

@@ -12,8 +12,8 @@ These rules define the default behavior for the custom global workflow agents.
 
 ## Project structure expectations
 
-- The current project should contain `plans/active/` and `plans/archive/`.
-- One full experiment plan should live in `plans/active/plans-<timestamp>-<slug>.md`.
+- The canonical shared backend should contain `copilot/plans/active/` and `copilot/plans/archive/`.
+- One full experiment plan should live in `copilot/plans/active/<plan-id>.md`.
 - That plan file should have a sibling run directory with the same stem.
 - Exact plan and summary formats live in the relevant command and agent prompts.
 - Files in `workflow/` are reference material for maintaining those prompts, not a required runtime dependency.
@@ -24,7 +24,7 @@ These rules define the default behavior for the custom global workflow agents.
 - `orchestrator` should invoke `workflow`, `implementation`, `review`, and `analysis` directly.
 - `workflow`, `implementation`, `review`, and `analysis` should not invoke each other.
 - For each active plan, `orchestrator` should start exactly one `workflow` subagent session and then resume it by `task_id` after each stage.
-- Persist that per-plan workflow `task_id` in `workflow-session.json` inside the sibling run directory.
+- Persist each workflow family's per-plan `task_id` in its own session file inside the sibling run directory.
 - Treat plan files and summary files as the workflow state machine.
 - Make every stage restart-safe and able to resume from existing files.
 - Do not start the loop merely because an active plan exists; start it only from an explicit user request to the workflow system.
@@ -83,7 +83,7 @@ These rules define the default behavior for the custom global workflow agents.
 
 - Archive only when the full plan is genuinely complete.
 - When archiving, ensure summary headers and the workflow summary point at the final archived plan and run-directory paths.
-- If the plan is blocked or incomplete, leave it in `plans/active/` and explain why.
+- If the plan is blocked or incomplete, leave it in `copilot/plans/active/` and explain why.
 
 ## Slurm defaults
 

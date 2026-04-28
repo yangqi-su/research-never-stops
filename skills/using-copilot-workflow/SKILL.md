@@ -1,6 +1,6 @@
 ---
 name: using-copilot-workflow
-description: Use when the user wants the separate Copilot-optimized workflow fork with question-driven clarification, isolated Copilot plans, and direct agent delegation.
+description: Use when the user wants the Copilot-routed workflow family with question-driven clarification and direct agent delegation over the shared workflow backend.
 compatibility: opencode
 metadata:
   domain: workflow
@@ -9,7 +9,7 @@ metadata:
 
 # Using Copilot Workflow
 
-Use this skill when the user wants to use the separate Copilot-optimized workflow fork instead of the stable root workflow.
+Use this skill when the user wants to use the Copilot-routed workflow family over the shared workflow backend.
 
 ## Announce
 
@@ -23,8 +23,8 @@ Use this skill when any of the following are true:
 
 - the user explicitly asks for the Copilot workflow fork
 - the user wants a question-driven intake loop with as much interaction as possible kept inside one session
-- the user wants isolated Copilot plans, sessions, summaries, and memory
-- the user wants the Copilot stack's model assignments rather than the stable root workflow stack
+- the user wants Copilot-family sessions and model routing over the shared plan and memory backend
+- the user wants the Copilot stack's model assignments rather than the root workflow family's model assignments
 
 ## Default Entry Point
 
@@ -38,7 +38,7 @@ Use this skill when any of the following are true:
 
 ## Core Rules
 
-- treat the Copilot stack as separate from the root workflow stack
+- treat the Copilot family as sharing canonical plans, summaries, and memory with the root family while keeping its own session files and model routing
 - keep required behavior in Copilot commands, agents, and skills rather than non-runtime docs
 - prefer direct agent delegation over internal command chaining
 - prefer `question` over stopping whenever a focused user answer can unblock the next safe step
@@ -57,13 +57,13 @@ Use this skill when any of the following are true:
 - require explicit approval before starting execution-oriented workflow phases
 - if the plan changes materially, re-confirm approval before proceeding
 
-## Isolation Rules
+## Shared Backend Rules
 
 - Copilot plans live under `copilot/plans/active/` and `copilot/plans/archive/`
 - Copilot memory lives under `copilot/memory/`
-- shared root `STATUS.md` and `FIX.md` may be read as cross-stack summary entrypoints without treating root `memory/` as Copilot-owned
+- shared root `STATUS.md` and `FIX.md` may be read as cross-family summary entrypoints without treating legacy root `memory/` as canonical
 - Copilot workflow session files such as `workflow-session.json` and `agent-sessions.json` live only inside Copilot run directories
-- do not read or write the root `plans/` or `memory/` trees broadly unless the user explicitly asks for cross-stack comparison or migration work
+- do not treat root `plans/` or `memory/` as canonical storage for new work
 
 ## Runtime Ownership
 
@@ -80,7 +80,7 @@ Use this skill when any of the following are true:
 ## Do Not
 
 - do not treat `copilot/README.md`, `copilot/plans/README.md`, or any other reference doc as the only source of required behavior
-- do not mix Copilot workflow state with the root workflow state
+- do not mix Copilot session files with root-family session files even though both families share plan, summary, and memory artifacts
 - do not write a plan before approval
 - do not start execution-oriented workflow work before approval
 - do not depend on slash-command chaining between agents when direct delegation will work

@@ -30,7 +30,7 @@ Use the following handoff contract directly in your output and files.
 
 Required summary header:
 
-- `Plan ID`: stable stem such as `copilot-plans-20260407-1530-train-baseline`
+- `Plan ID`: stable stem such as `copilot-plans-20260407-1530-train-baseline` or `plans-20260407-1530-train-baseline`
 - `Plan`: current path to the plan file
 - `Run Directory`: current path to the sibling run directory
 - `Path State`: `active` or `archived`
@@ -82,7 +82,7 @@ Write `workflow-summary.md` using this exact section order:
 
 Rules:
 
-- start from one active plan file at `copilot/plans/active/copilot-plans-<timestamp>-<slug>.md`
+- start from one active plan file at `copilot/plans/active/`
 - stay bound to one `Plan ID` for the life of this subagent session unless `copilot-orchestrator` explicitly redirects you
 - ensure the sibling run directory exists; create it if missing
 - expect `copilot-orchestrator` to persist this session's `task_id` in `workflow-session.json` inside the sibling run directory

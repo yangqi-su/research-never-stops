@@ -13,13 +13,13 @@ Behavior:
 - if required sections are missing or materially incomplete, stop and report what is missing instead of guessing
 - treat the plan file itself as the only canonical handoff artifact
 - do not create any additional handoff markdown file
-- ensure `plans/`, `plans/active/`, and `plans/archive/` exist if needed
+- ensure `copilot/plans/`, `copilot/plans/active/`, and `copilot/plans/archive/` exist if needed
 - if the approved plan already contains a valid `Plan ID`, reuse it; otherwise generate `plans-<timestamp>-<slug>`
 - if `Created` is missing or `TBD`, fill it with the current timestamp
 - because `/write-plan` implies approval, set `Status` to `ready` when it is still `draft` or `TBD`
 - preserve the approved wording and phase structure everywhere else
-- write the plan file at `plans/active/<Plan ID>.md`
-- create the sibling run directory at `plans/active/<Plan ID>/`
+- write the plan file at `copilot/plans/active/<Plan ID>.md`
+- create the sibling run directory at `copilot/plans/active/<Plan ID>/`
 - do not create `workflow-session.json`
 - do not start `workflow`
 
@@ -28,7 +28,7 @@ Accepted plan structure:
 ```md
 # Experiment Plan
 
-- `Plan ID`: `plans-<timestamp>-<slug>` or `TBD`
+- `Plan ID`: `plans-<timestamp>-<slug>`, `copilot-plans-<timestamp>-<slug>`, or `TBD`
 - `Created`: `YYYY-MM-DD HH:MM` or `TBD`
 - `Status`: `draft`, `ready`, `in-progress`, `blocked`, or `done`
 - `Owner`: `user`, `primary agent`, or both

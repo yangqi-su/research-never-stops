@@ -10,7 +10,9 @@ Behavior:
 - if the arguments identify an existing active plan, use it directly
 - if exactly one active plan exists and the arguments are empty, use it directly
 - if there is no suitable active plan, stop and tell the user to use `/draft-plan` followed by `/write-plan` first
-- create or resume `workflow-session.json` for that plan
+- resolve active plans from `copilot/plans/active/`
+- create or resume `workflow-session-root.json` for that plan
+- maintain `agent-sessions-root.json` for root-family leaf-agent continuity
 - start or resume the persistent `workflow` sidecar
 - keep delegating automatically according to `workflow` stage decisions until `workflow` returns a terminal state: `archive`, `wait`, `blocked`, or `needs-user`
 - use `implementation` for code changes, validation, execution routing, actual local or Slurm execution, and monitoring
@@ -20,4 +22,4 @@ Behavior:
 - do not stop and ask the user what agent to run next between normal non-terminal stages
 - if multiple active plans exist and the arguments do not identify one, ask one focused question
 
-When you stop, report the current plan path, run directory, terminal state, and the key evidence.
+When you stop, report the current plan path, run directory, whether `workflow-session-root.json` was created, resumed, or replaced, the terminal state, and the key evidence.

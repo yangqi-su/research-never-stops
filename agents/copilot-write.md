@@ -59,7 +59,7 @@ Accepted plan structure:
 ```md
 # Experiment Plan
 
-- `Plan ID`: `copilot-plans-<timestamp>-<slug>` or `TBD`
+- `Plan ID`: `copilot-plans-<timestamp>-<slug>`, `plans-<timestamp>-<slug>`, or `TBD`
 - `Created`: `YYYY-MM-DD HH:MM` or `TBD`
 - `Status`: `draft`, `ready`, `in-progress`, `blocked`, or `done`
 - `Owner`: `user`, `primary agent`, or both

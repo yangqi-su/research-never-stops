@@ -9,5 +9,5 @@ Behavior:
 - summarize the latest Copilot workflow state files
 - remain the only entry agent and delegate workflow inspection internally when needed
 - prefer existing Copilot summaries over reconstruction
-- keep this flow isolated from the root workflow stack
+- keep Copilot-family session handling distinct from root-family session files while using the shared `copilot/plans/` backend
 - if state looks stale or contradictory, say so plainly and recommend `/copilot-workflow-resume`

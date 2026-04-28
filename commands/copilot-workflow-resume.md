@@ -9,5 +9,5 @@ Behavior:
 - resolve the target plan from the arguments or the only active Copilot plan when unambiguous
 - remain the only entry agent and delegate workflow decisions internally
 - resume the persisted Copilot workflow sidecar when possible
-- keep this flow isolated from the root workflow stack
+- keep Copilot-family session handling distinct from root-family session files while using the shared `copilot/plans/` backend
 - continue the normal Copilot workflow loop until a terminal state is reached

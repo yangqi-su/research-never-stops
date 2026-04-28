@@ -21,7 +21,7 @@ Behavior:
 ```md
 # Experiment Plan
 
-- `Plan ID`: `plans-<timestamp>-<slug>` or `TBD`
+- `Plan ID`: `plans-<timestamp>-<slug>`, `copilot-plans-<timestamp>-<slug>`, or `TBD`
 - `Created`: `YYYY-MM-DD HH:MM` or `TBD`
 - `Status`: `draft`, `ready`, `in-progress`, `blocked`, or `done`
 - `Owner`: `user`, `primary agent`, or both

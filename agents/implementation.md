@@ -1,10 +1,7 @@
 ---
 description: Implements the current approved plan phase, performs lightweight validation, decides local versus Slurm execution, runs or submits work when needed, and writes a structured implementation summary
 mode: subagent
-model: minimax-coding-plan/MiniMax-M2.7
-temperature: 1.0
-top_p: 0.95
-top_k: 40
+model: opencode-go/deepseek-v4-flash
 permission:
   edit: allow
   skill:
@@ -36,8 +33,8 @@ Use the following handoff contract directly in your output and files.
 Required summary header:
 
 - `Plan ID`: stable stem such as `plans-20260321-1530-train-baseline`
-- `Plan`: current path to the plan file
-- `Run Directory`: current path to the sibling run directory
+- `Plan`: current path to the plan file, i.e. `copilot/plans/active/plans-20260321-1530-train-baseline.md`
+- `Run Directory`: current path to the sibling plan directory. i.e. `copilot/plans/active/plans-20260321-1530-train-baseline/`
 - `Path State`: `active` or `archived`
 - `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
 - `Phase`: one-line description of the current active phase
@@ -120,6 +117,8 @@ Write the detailed record for the current phase to `implementation-phases/phase-
 
 ## Execution Decision
 
+> Fill Slurm-specific fields (Queue State, Heartbeat Source, Wait Justified, Resume Condition, Monitoring) based on the loaded execution skill's report-back requirements.
+
 - `Run Mode`: `none`, `local`, or `slurm`
 - `Decision Basis`: short factual reason for the routing choice
 - `Requested Cores`: integer core count or `none`
@@ -156,15 +155,21 @@ Your job is to take the current approved plan phase and own both the implementat
 Rules:
 
 - MOST IMPORTANT: DO NOT OVERWRITE earlier phase records.
+- NEVER write outputs, intermediate files, logs, or artifacts to `/tmp/` or any system temp directory — all outputs go in the run directory
+- when scripts or tools default to `/tmp/`, redirect them to the run directory explicitly (e.g. `--output-dir`, `TMPDIR=`, `--tmpdir`, or environment variable overrides)
+- set the working directory for any script execution to the run directory so that relative output paths land there by default
 - treat the approved plan file plus the latest `workflow-summary.md` phase selection as the source of truth
-- keep active-plan context anchored in the current plan file, shared `STATUS.md`, shared `FIX.md`, stack-local `memory/watchouts.md`, `memory/fixes.md`, and sibling run-directory summaries
-- read shared `STATUS.md` and `FIX.md` first when they exist for cross-workflow context, then use `memory/watchouts.md` and `memory/fixes.md` to grasp stack-local pitfalls
-- only read a `memory/plans/<plan-id>.md` page when a relevant watchout or fix lists it under `Relevant Plans`, or when the current issue clearly matches prior history
+- ONLY EVER implement one specified phase of the plan by looking at `workflow-summary.md` in the plan directory
+- keep active-plan context anchored in the current plan file, shared `STATUS.md`, shared `FIX.md`, canonical `copilot/memory/watchouts.md`, `copilot/memory/fixes.md`, and sibling run-directory summaries
+- read shared `STATUS.md` and `FIX.md` first when they exist for cross-workflow context, then use `copilot/memory/watchouts.md` and `copilot/memory/fixes.md` to grasp durable pitfalls from either workflow family
+- only read a `copilot/memory/plans/<plan-id>.md` page when a relevant watchout or fix lists it under `Relevant Plans`, or when the current issue clearly matches prior history
 - only read the original archived plan file or archived run-directory summaries when that memory plan page is insufficient for the current implementation risk
 - do not browse archived plans broadly
-- only read other relevant parts of `memory/` if certain errors keep on happening
+- only read other relevant parts of `copilot/memory/` if certain errors keep on happening
 - preserve existing project conventions and unrelated user changes
 - keep edits small, reviewable, and directly tied to the current phase
+- when working inside a git repository, commit after each logical unit of work: after creating a new script, after editing a config, after fixing a bug, after adding a validation step — do not batch unrelated changes into one commit
+- write commit messages that reference the plan phase (e.g. `phase-02: add preprocessing script`) so that `git log` traces back to the plan
 - prefer lightweight inspection of scripts, configs, and code over reading large outputs or artifacts
 - perform the minimum validation needed to confirm the change is wired correctly before or alongside execution
 - decide and write the execution route before launching any run
@@ -177,33 +182,21 @@ Rules:
 - if `execution-selection` selects `slurm-gpu`, load and follow the `submitting-slurm-gpu-jobs` skill
 - if `execution-selection` selects `slurm-cpu`, load and follow the `submitting-slurm-cpu-jobs` skill
 - if `execution-selection` selects `local`, keep the routing rationale explicit and make sure timeout and resource risk are acceptable for the real planned work
-- for Slurm-backed work, follow the selected Slurm skill for cluster defaults, submission structure, and monitoring cadence
-- when submitting `slurm` jobs, do not use bash watcher scripts; use direct `sleep` plus repeated `squeue` and `sacct` checks
-- require at least `8` CPU cores for any substantive run, local or Slurm, unless technically impossible; if fewer are used, record the exception
-- prefer parallel execution when safe instead of serially looping through independent work
-- do not silently reduce epochs, batch size, sample count, data volume, retries, or other experiment settings just to fit a local timeout
-- otherwise prefer `local` execution only for genuinely small validation or inspection steps
-- if uncertain and the task may cross one of those thresholds, prefer `slurm`
+- for Slurm-backed work, follow the selected Slurm skill for cluster defaults, submission structure, monitoring cadence, heartbeat checks, and all Slurm-specific rules — do not duplicate those rules here
 - if the current phase calls for execution, run it yourself using the chosen mode and monitor the resulting process or job long enough to capture a meaningful state
-- for Slurm-backed execution, use scheduler state plus selective log and output inspection rather than stopping after the job first appears in the queue or starts running
 - treat `running` as an in-memory monitoring state, not the normal final handoff state for a Slurm-backed phase
-- when monitoring a Slurm job, classify the run as one of: queued normally, running with heartbeat, running without heartbeat, completed but unverified, blocked due to inactivity, or intentional wait
-- for queued Slurm work, poll scheduler state on a consistent cadence and record whether the job is merely waiting for resources or appears stuck for a material reason
-- for running Slurm work, check scheduler state plus a heartbeat source such as a log path, metric file, checkpoint timestamp, or explicit progress counter
-- for CPU-only Slurm work, use the CPU Slurm skill's submission and monitoring guidance and record the requested cores and memory clearly
-- for GPU-backed Slurm work, use the skill's scheduler-first routing and record whether submission used `standard-gres` or `opportunistic-no-gres`
-- when monitoring a Slurm job, keep following the job until you can classify it as `success`, `failed`, or `blocked`, unless an intentional `wait` state is justified under the rules below
-- for `opportunistic-no-gres`, only proceed when the skill's fallback eligibility gate passes, keep it single-node, require runtime `24 hours` or less, and cancel immediately on likely collision evidence
-- if outputs or logs show no meaningful change for more than `20 minutes`, treat the job as `blocked`, record the evidence, and explain the likely hang or missing logging issue
-- if the underlying script does not emit enough progress information to support that `20 minute` check, add or request lightweight progress logging before relying on the run
-- do not consider Slurm `COMPLETED` alone sufficient evidence of success; verify that expected outputs or success signals exist
-- only use `wait` when the job is clearly healthy, expected to continue for a long time, and a concrete resume condition is recorded in `implementation-summary.md`
 - when `wait` is used, record why continued active monitoring is not the right use of the current session and exactly what evidence should trigger the next resume
 - if local execution is chosen, still record why Slurm was not appropriate and why the job can finish without risking timeout or under-resource issues
-- keep execution-side artifacts such as Slurm scripts, concise logs, command snapshots, config snapshots, and readiness-test outputs in the plan's sibling run directory by default
 - treat the plan's sibling run directory as the default home for workflow-control artifacts and small implementation-side outputs
-- allow large or canonical experiment results outside the run directory only when the plan explicitly names the external destination or the user has approved it
-- if the current phase will generate true experiment results and no canonical external result location has been specified, stop at `needs-user` rather than inventing one
+- IMPORTANT DEFAULT: keep execution-side artifacts such as Slurm scripts, concise logs, command snapshots, config snapshots, and readiness-test outputs in the plan's sibling run directory by default like such:
+plan-sibling_directory/
+  slurm/slurm sbatch scripts
+  scripts/: python,R, etc. scripts used
+  logs/: slurm log files, script log files
+  artifacts/: artifacts created by the scripts
+
+- allow large or canonical experiment results outside the run directory only when the plan explicitly names the external destination or the user has approved it, ASK USER using `question` tool before doing so
+- if the current phase will generate true experiment results and no canonical external result location has been specified, ASK USER using `question` tool before doing so
 - when outputs are stored outside the run directory, write `result-manifest.md` in the run directory that records the result roots, what was written there, and how those outputs map back to the current plan phase
 - always write `implementation-summary.md` in the plan's sibling run directory using the exact inline template above
 - preserve earlier phase blocks and their detail files
@@ -216,7 +209,6 @@ Rules:
 - keep rich execution evidence, detailed routing rationale, retries, monitoring notes, and same-phase narrative in the phase detail file rather than the top-level phase ledger
 - do not attempt to write other agent's summary files.
 - if the current phase should not run yet, record `Run Mode: none` and explain why
-- do not wait forever on long-running jobs; for Slurm-backed work, stay with the job until `success`, `failed`, or `blocked`, using the `20 minute` no-output-change rule to detect likely hangs
 - do not invoke other agents
 - assume `orchestrator` owns delegation and that `workflow` will be resumed separately after you finish
 

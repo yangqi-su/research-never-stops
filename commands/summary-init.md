@@ -7,13 +7,13 @@ Initialize the shared cross-workflow summary layer for this project.
 Behavior:
 
 - create `STATUS.md` and `FIX.md` if they do not already exist
-- inspect `memory/` and `copilot/memory/` directly from the filesystem rather than inferring their existence from git-aware search
-- treat stack-local memory stores as the source of truth for their own workflow stacks
+- inspect `copilot/memory/` first and `memory/` second when those directories exist
+- treat `copilot/memory/` as canonical and `memory/` as legacy optional input
 - prefer `current.md`, `summary.md`, `watchouts.md`, `fixes.md`, and `index.json` from each stack-local memory store before drilling deeper
-- use `memory/plans/` or `copilot/memory/plans/` only when needed for attribution or conflict resolution
-- do not scan `plans/` or `copilot/plans/` directly during normal shared-summary initialization when stack-local memory is available
-- if one or both stack-local memory stores are absent or unreadable, initialize minimal shared summaries and report that gap directly
-- do not edit `memory/` or `copilot/memory/`
+- use `copilot/memory/plans/` first and `memory/plans/` only when legacy attribution or conflict resolution is still needed
+- do not scan `copilot/plans/` or `plans/` directly during normal shared-summary initialization when usable memory is available
+- if the canonical memory store is absent or unreadable, initialize minimal shared summaries and report that gap directly
+- do not edit `copilot/memory/` or `memory/`
 - treat `$ARGUMENTS` as optional user preferences about scope, emphasis, or which stack to foreground
 
 When you stop, report what shared files were initialized, what memory sources were used, the most important shared conclusions captured, and any evidence gaps that limited the first pass.

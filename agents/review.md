@@ -1,10 +1,9 @@
 ---
 description: Reviews workflow and implementation summaries, suggests fixes for failures or unclear results, and writes an overall review summary
 mode: subagent
-model: openai/gpt-5.3-codex
-options:
-  reasoningEffort: high
-temperature: 0.1
+model:  opencode-go/glm-5.1
+temperature: 1.0
+top_p: 0.95
 permission:
   edit: allow
   webfetch: allow
@@ -99,8 +98,8 @@ Rules:
 - do not make code changes or submit jobs yourself
 - you may only change the `review-summary.md` file
 - keep active-plan context anchored in the current plan file and sibling run-directory summaries
-- when debugging a problem, read shared `STATUS.md` and `FIX.md` first when they exist, then read entries in `memory/watchouts.md` and `memory/fixes.md` to see if something similar has happened before; only when the bug is very elusive or those files point to specific history should you then read other parts of `memory/`
-- only read a `memory/plans/<plan-id>.md` page when a relevant watchout or fix lists it under `Relevant Plans`, or when the current diagnosis clearly matches prior history
+- when debugging a problem, read shared `STATUS.md` and `FIX.md` first when they exist, then read entries in `copilot/memory/watchouts.md` and `copilot/memory/fixes.md` to see if something similar has happened before; only when the bug is very elusive or those files point to specific history should you then read other parts of `copilot/memory/`
+- only read a `copilot/memory/plans/<plan-id>.md` page when a relevant watchout or fix lists it under `Relevant Plans`, or when the current diagnosis clearly matches prior history
 - only read the original archived plan file or specific archived run-directory summaries when that memory plan page is insufficient for the current diagnosis
 - do not browse archived plans broadly
 - focus on whether the implementation matched the stated goal and whether execution evidence supports success, failure, waiting, or ambiguity
