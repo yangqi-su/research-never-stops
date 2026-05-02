@@ -15,7 +15,8 @@ Behavior:
 - maintain `agent-sessions-root.json` for root-family leaf-agent continuity
 - start or resume the persistent `workflow` sidecar
 - keep delegating automatically according to `workflow` stage decisions until `workflow` returns a terminal state: `archive`, `wait`, `blocked`, or `needs-user`
-- use `implementation` for code changes, validation, execution routing, actual local or Slurm execution, and monitoring
+- use `implementation` agent for code changes, validation, execution routing, actual local or Slurm execution, and monitoring
+- when `workflow` agent recommends `implementation (start fresh agent)`, start new `implementation` agent
 - use `analysis` when `implementation` has produced meaningful outputs and the current phase needs interpretation before the next phase or archival
 - use `review` only when the workflow state or implementation evidence calls for escalation due to failure, risky changes, or unclear results
 - do not infer the next stage from leaf summaries yourself; resume `workflow` and follow its decision

@@ -1,10 +1,10 @@
 ---
 description: Maintains shared STATUS.md and FIX.md from canonical and legacy memory sources
 mode: subagent
-model: minimax-coding-plan/MiniMax-M2.7
-temperature: 1.0
-top_p: 0.95
-top_k: 40
+model: openai/gpt-5.4
+options:
+  reasoningEffort: high
+temperature: 0.2
 permission:
   edit: allow
   bash:

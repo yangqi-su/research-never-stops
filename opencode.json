@@ -22,7 +22,7 @@
       }
     },
     "build": {
-      "model": "minimax-coding-plan/MiniMax-M2.7",
+      "model": "opencode-go/deepseek-v4-pro",
       "tools": {
         "write": true,
         "edit": true,

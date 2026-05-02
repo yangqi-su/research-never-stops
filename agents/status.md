@@ -1,10 +1,9 @@
 ---
 description: Maintains structured workspace memory under copilot/memory/
 mode: subagent
-model: minimax-coding-plan/MiniMax-M2.7
+model:  opencode-go/deepseek-v4-pro
 temperature: 1.0
-top_p: 0.95
-top_k: 40
+top_p: 1
 permission:
   edit: allow
   skill:

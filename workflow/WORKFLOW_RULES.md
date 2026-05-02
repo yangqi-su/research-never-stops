@@ -49,28 +49,9 @@ These rules define the default behavior for the custom global workflow agents.
 
 ## Execution routing
 
-- `implementation` should choose `slurm` for any substantive experiment, sweep, batch, or multi-step job unless it is clearly tiny and short-lived.
-- `implementation` should choose `slurm` when any relevant input file exceeds `1GB`.
-- `implementation` should choose `slurm` when the job is highly parallelizable or can fan out safely across independent units of work.
-- `implementation` should choose `slurm` for deep-learning or GPU-requiring work.
-- For GPU-backed Slurm execution, `implementation` should load the `submitting-slurm-gpu-jobs` skill and prefer standard `--gres` submission before any allowed no-GRES fallback.
-- `implementation` should choose `slurm` when expected runtime may exceed `30 minutes`.
-- `implementation` should choose `slurm` whenever a local run would likely hit bash timeouts, require repeated manual reruns, or tempt parameter weakening.
-- `implementation` should require at least `8` CPU cores for any substantive run, local or Slurm, unless technically impossible; if fewer are used, record the exception.
-- `implementation` should prefer parallel execution when safe instead of serially looping through independent work.
-- `implementation` should not silently reduce epochs, batch size, sample count, data volume, retries, or other experiment settings just to fit a local timeout.
-- Otherwise `implementation` should prefer `local` execution only for genuinely small validation or inspection steps.
-- If uncertain and the task may cross one of those thresholds, prefer `slurm`.
+> All execution routing, monitoring, heartbeat, and Slurm-specific rules now live in the `execution-selection`, `submitting-slurm-cpu-jobs`, and `submitting-slurm-gpu-jobs` skills. Agents are instructed to load and follow those skills rather than rely on this file.
 
-## Monitoring expectations
-
-- When `implementation` launches a Slurm-backed phase, it should continue monitoring until the job reaches `success`, `failed`, or `blocked` before finalizing `implementation-summary.md`.
-- Treat `wait` as exceptional rather than the default Slurm behavior.
-- If outputs or logs show no meaningful change for more than `20 minutes`, `implementation` should treat the run as `blocked` and record the evidence.
-- If scripts do not emit enough progress information to support that check, `implementation` should add or request lightweight progress logging.
-- `implementation` should classify long-running work as queued normally, running with heartbeat, running without heartbeat, completed but unverified, blocked due to inactivity, or intentional wait.
-- For opportunistic no-GRES GPU runs, `implementation` should only use the fallback for single-node jobs expected to run `24 hours` or less, and should cancel immediately on likely collision evidence.
-- `implementation` should use `wait` only when the run is healthy and the resume condition is explicitly recorded.
+- Agents should load `execution-selection` before launching execution and follow the appropriate Slurm skill when `slurm` is chosen.
 
 ## Output placement
 

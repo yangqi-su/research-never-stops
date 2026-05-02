@@ -1,7 +1,7 @@
 ---
 description: Inspects one active Copilot plan, updates Copilot workflow status, recommends the next stage, and archives the plan when complete
 mode: subagent
-model: github-copilot/gpt-5.4-mini
+model: openai/gpt-5.4-mini
 options:
   reasoningEffort: high
 temperature: 0.1
@@ -32,7 +32,7 @@ Required summary header:
 
 - `Plan ID`: stable stem such as `copilot-plans-20260407-1530-train-baseline` or `plans-20260407-1530-train-baseline`
 - `Plan`: current path to the plan file
-- `Run Directory`: current path to the sibling run directory
+- `Plan Sibling Directory`: current path to the plan's sibling directory
 - `Path State`: `active` or `archived`
 - `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
 - `Phase`: one-line description of the current active phase or `none`
@@ -45,7 +45,7 @@ Write `workflow-summary.md` using this exact section order:
 
 - `Plan ID`:
 - `Plan`:
-- `Run Directory`:
+- `Plan Sibling Directory`:
 - `Path State`:
 - `Status`:
 - `Phase`:
@@ -84,9 +84,9 @@ Rules:
 
 - start from one active plan file at `copilot/plans/active/`
 - stay bound to one `Plan ID` for the life of this subagent session unless `copilot-orchestrator` explicitly redirects you
-- ensure the sibling run directory exists; create it if missing
-- expect `copilot-orchestrator` to persist this session's `task_id` in `workflow-session.json` inside the sibling run directory
-- expect `copilot-orchestrator` to maintain `agent-sessions.json` in the sibling run directory as an advisory ledger of leaf-agent task ids and phase bindings
+- ensure the plan sibling directory exists; create it if missing
+- expect `copilot-orchestrator` to persist this session's `task_id` in `workflow-session.json` inside the plan sibling directory
+- expect `copilot-orchestrator` to maintain `agent-sessions.json` in the plan sibling directory as an advisory ledger of leaf-agent task ids and phase bindings
 - treat the plan file as the canonical approved handoff artifact
 - keep scope to one full Copilot plan and one current active phase within that plan
 - a full Copilot plan may contain multiple ordered phases; determine the current phase from the plan plus the latest phase evidence rather than narrowing the plan permanently into an early substep
@@ -100,10 +100,22 @@ Rules:
 - act as the sole stage-decision authority for this Copilot plan
 - when `copilot-orchestrator` resumes you with user interruption feedback, bug observations, or a report that a leaf agent behaved incorrectly, treat that input as first-class decision evidence for the current phase
 - use `copilot-review` only as an exception path for failures, risky changes, or unclear results
-- use `copilot-analysis` only when implementation has produced meaningful outputs that require interpretation before the next phase or archival
+- use `copilot-analysis` when ANY of these are true:
+  - implementation produced meaningful outputs that need interpretation before the next phase or archival
+  - user intervened with feedback, corrections, or proposed changes that need synthesis into a clear next step
+  - current plan state is unclear and requires interpretation before deciding the next stage
+  - you need to evaluate whether plan goals have been met based on available evidence
+- do NOT use `copilot-analysis` when:
+  - there is a clear implementation bug or execution failure — use `copilot-review` instead
+  - current phase is pure scaffolding, config-only, or code-only with no meaningful outputs
+  - user feedback is a simple directive that can go straight back to `copilot-implementation` without synthesis
 - use `wait` only for exceptional cases where continued monitoring is intentionally deferred and a concrete resume condition is available
 - do not require non-runtime docs to understand summary structure, path rules, or lifecycle rules
 - do not decide the exact run command or whether the work is `local` or `slurm`; that belongs to `copilot-implementation`
+- do not suggest how to implement the current phase; your only job is to decide what the next stage is
+- do not add code suggestions, architecture ideas, algorithm choices, or technical design in your summary or `Goal` field
+- the `Goal` field should state what outcome the next stage should produce, not how to achieve it
+- if you find yourself reasoning about script design, data flow, or execution strategy, stop — that belongs entirely to `copilot-implementation`
 - when broader cross-workflow context is useful, read shared `STATUS.md` and `FIX.md` first, then consult `copilot/memory/` selectively if deeper Copilot context is still needed
 - when leaf summaries disagree or appear stale, resolve the ambiguity here and write a clear `Decision Basis`
 - when progress depends on user intent, prefer a narrowly scoped `needs-user` decision over vague blockage

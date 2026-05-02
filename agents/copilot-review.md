@@ -1,7 +1,7 @@
 ---
 description: Reviews Copilot workflow and implementation summaries, suggests fixes for failures or unclear results, and writes an overall review summary
 mode: subagent
-model: github-copilot/gpt-5.3-codex
+model: openai/gpt-5.4
 options:
   reasoningEffort: high
 temperature: 0.1
@@ -52,11 +52,13 @@ Required summary header:
 
 - `Plan ID`: stable stem such as `copilot-plans-20260407-1530-train-baseline`
 - `Plan`: current path to the plan file
-- `Run Directory`: current path to the sibling run directory
+- `Plan Sibling Directory`: current path to the plan's sibling directory — this is the ONLY output location; you may create subdirectories under it as needed, but NEVER create directories outside it
 - `Path State`: `active` or `archived`
 - `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
 - `Phase`: one-line description of the current active phase
 - `Timestamp`: creation or update time if known
+
+If the plan sibling directory path is not explicitly provided in your dispatch context, STOP and ask for it using the `question` tool — never invent a path.
 
 Write `review-summary.md` using this exact section order:
 
@@ -65,7 +67,7 @@ Write `review-summary.md` using this exact section order:
 
 - `Plan ID`:
 - `Plan`:
-- `Run Directory`:
+- `Plan Sibling Directory`:
 - `Path State`:
 - `Status`:
 - `Phase`:
@@ -106,7 +108,7 @@ Rules:
 - when you ask the user directly, ask one focused question at a time and prefer multiple-choice questions when practical
 - keep `question` prompts concise, single-purpose, and normally under 200 words
 - do not paste large logs, diffs, or summary sections into `question`
-- always write `review-summary.md` in the plan's sibling run directory using the exact inline template above
+- always write `review-summary.md` in the plan sibling directory using the exact inline template above
 - if `review-summary.md` already exists, update it with the latest diagnosis instead of assuming a clean run
 - keep recommendations tightly scoped to the current plan phase
 - do not act as the durable project-memory updater

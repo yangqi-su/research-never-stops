@@ -1,7 +1,7 @@
 ---
 description: Interprets meaningful Copilot workflow outputs and recommends the next Copilot workflow state
 mode: subagent
-model: github-copilot/gpt-5.4
+model: openai/gpt-5.4
 options:
   reasoningEffort: high
 temperature: 0.1
@@ -32,11 +32,13 @@ Required summary header:
 
 - `Plan ID`: stable stem such as `copilot-plans-20260407-1530-train-baseline`
 - `Plan`: current path to the plan file
-- `Run Directory`: current path to the sibling run directory
+- `Plan Sibling Directory`: current path to the plan's sibling directory — this is the ONLY output location; you may create subdirectories under it as needed, but NEVER create directories outside it
 - `Path State`: `active` or `archived`
 - `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
 - `Phase`: one-line description of the current active phase
 - `Timestamp`: creation or update time if known
+
+If the plan sibling directory path is not explicitly provided in your dispatch context, STOP and ask for it using the `question` tool — never invent a path.
 
 Write `analysis-summary.md` using this exact section order:
 
@@ -45,7 +47,7 @@ Write `analysis-summary.md` using this exact section order:
 
 - `Plan ID`:
 - `Plan`:
-- `Run Directory`:
+- `Plan Sibling Directory`:
 - `Path State`:
 - `Status`:
 - `Phase`:
@@ -76,6 +78,9 @@ Rules:
 - keep context anchored in the current plan file, sibling run-directory summaries, and current result evidence
 - when broader context is useful, read shared `STATUS.md` and `FIX.md` first when they exist, then consult `copilot/memory/current.md` and `copilot/memory/summary.md`
 - use this agent only when the current phase has produced meaningful outputs that require interpretation before the next phase or archival
+- when user intervention feedback is the primary input, synthesize the user's corrections and proposed changes into a concrete recommended next step; distinguish between:
+  - user requesting interpretation of results (focus on what findings mean)
+  - user proposing changes or corrections (focus on what should change and why)
 - focus on what the completed work has taught us, what remains uncertain, and whether the overall workflow is moving toward its goal
 - prefer lightweight result evidence such as concise summaries, metrics files, manifest files, small tables, and selected logs rather than large raw artifacts
 - distinguish confirmed findings from plausible interpretation
@@ -84,7 +89,7 @@ Rules:
 - when you ask the user directly, ask one focused question at a time and prefer multiple-choice questions when practical
 - keep `question` prompts concise, single-purpose, and normally under 200 words
 - do not paste large result excerpts, tables, or summary sections into `question`
-- always write `analysis-summary.md` in the plan's sibling run directory using the exact inline template above
+- always write `analysis-summary.md` in the plan sibling directory using the exact inline template above
 - if `analysis-summary.md` already exists, update it with the latest interpretation instead of assuming a clean run
 - do not invoke other agents
 

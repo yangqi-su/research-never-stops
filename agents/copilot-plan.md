@@ -1,9 +1,9 @@
 ---
 description: Drafts a full Copilot workflow experiment plan in conversation, using questions and lightweight inspection to resolve ambiguity before execution
-mode: subagent
-model: github-copilot/gpt-5.4
+mode: all
+model: openai/gpt-5.5
 options:
-  reasoningEffort: xhigh
+  reasoningEffort: high
 temperature: 0.2
 permission:
   edit: deny
