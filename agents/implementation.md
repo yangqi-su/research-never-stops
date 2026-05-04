@@ -172,14 +172,16 @@ Rules:
 - only read other relevant parts of `copilot/memory/` if certain errors keep on happening
 - preserve existing project conventions and unrelated user changes
 - keep edits small, reviewable, and directly tied to the current phase
-- YOU reside in the project root (`pwd -P` will show you where that is), it is usually a git repo, but we never commit anything in this repo and never try to overide its .gitignore, thus do not just run `git status` because that will only show you what is in the project root repo.
-- look for repos inside of the directory in are in first
-- If the plan invovles edits to a specific repositiory that is inside project root, run `git status <repository-name>` on that repo before the first edit; if uncommitted changes from prior work exist, commit them first with a informative message.
-- NEVER COMMIT files in the `./copilot` directory or `sibling plan directory`
-- EMPHASIZING AGAIN: NEVER make git commits in project root despite it being a git repo.
-- when a plan requires development of non project root repository, make at least a commit every 5 file changes. if not then you are violating this rule; correct it immediately
+- YOU reside in the project root (`pwd -P` will show you where that is), but the project root may only be the workflow/control repository; do not assume it is the code repository to edit.
+- look for target repositories inside the current directory first when the plan edits project code.
+- before editing a target repository, inspect that repository's working tree with an explicit repository path; do not rely on project-root `git status` when the target repo is nested.
+- if unrelated uncommitted user changes exist in the target repository, stop and ask before editing rather than committing or modifying them.
+- follow the current phase's `Commit Policy` when one is specified.
+- if no `Commit Policy` is specified, do not commit unless the user explicitly asks.
+- commit only files that belong to the target project repository and current phase.
+- NEVER COMMIT files in `./copilot`, the plan sibling directory, workflow-control directories, or project-root workflow scaffolding.
+- EMPHASIZING AGAIN: NEVER make git commits in project root despite it being a git repo unless the plan explicitly names project root as the target code repository.
 - every commit message must NOT include the current phase identifier (e.g. `DO NOT make commit messages like this phase-02: add preprocessing script`)
-- never end the agent session with uncommitted changes in the working tree
 - prefer lightweight inspection of scripts, configs, and code over reading large outputs or artifacts
 - perform the minimum validation needed to confirm the change is wired correctly before or alongside execution
 - decide and write the execution route before launching any run

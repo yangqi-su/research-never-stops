@@ -1,28 +1,30 @@
 ---
-description: Create the minimal OCAF-compatible scaffold in the current directory after a review pass
-agent: ocaf-analysis
+description: Initialize a minimal project-local scaffold for the research workflow
+agent: build
 ---
-Initialize the minimal OCAF-compatible scaffold in the current directory.
+Initialize the minimal project-local scaffold for the research workflow in the current directory.
 
 Behavior:
 
-- first obtain a safe project summary and scaffold recommendation from `ocaf-analysis-plan`
-- use that planning output to make the initial `AGENTS.md` and `STATUS.md` project-aware rather than leaving them as generic placeholders
-- inspect the directory safely first
+- use the latest `/analysis-prep` output when available; otherwise inspect the directory safely before writing
+- make `AGENTS.md` and `STATUS.md` project-aware rather than generic placeholders
 - preserve existing files wherever possible
 - create only the smallest useful scaffold
 - prefer additive changes over replacement
-- use the installed OCAF project templates under `~/.config/opencode/ocaf/templates/project/` as the baseline when helpful
-- if the repository already has some framework files, add only the missing pieces or make minimal compatible updates
+- if `AGENTS.md`, `STATUS.md`, `.opencode/`, `copilot/plans/`, or `copilot/memory/` already exists, add only missing pieces or make minimal compatible updates
+- if ownership or intended content is unclear, stop and ask rather than overwriting
+- do not copy global agents, commands, skills, or workflow reference files into the project by default
+- project-local files should capture project context, constraints, output locations, and safety notes, not duplicate global workflow mechanics
 - do not impose a bioinformatics-specific structure unless the user explicitly asks for it
 
 The target scaffold should usually include:
 
-- `AGENTS.md`
-- `STATUS.md`
-- `plans/README.md`
-- `.opencode/skills/README.md`
-- `.opencode/agents/README.md`
-- `opencode.json` if missing
+- `AGENTS.md` if missing, or a minimal additive update if present
+- `STATUS.md` if missing
+- `copilot/plans/active/`
+- `copilot/plans/archive/`
+- `opencode.json` if missing, containing an empty JSON object: `{}`
+
+Only create `copilot/memory/` when the user asks to initialize durable memory now; otherwise leave memory creation to `/status-init`.
 
 Treat any arguments as user preferences or domain hints: $ARGUMENTS

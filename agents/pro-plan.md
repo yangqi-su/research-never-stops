@@ -70,6 +70,7 @@ Rules:
 - use `explore` for targeted repo discovery and `general` for broader synthesis when that materially improves the plan
 - do not narrow the work to a tiny early step just to fit workflow machinery
 - produce one bounded experiment plan that may contain multiple ordered phases
+- when a phase includes code changes inside a project repository, specify a phase-level `Commit Policy`; do not add commit checkpoints for analysis-only, inspection-only, interpretation-only, or workflow-control phases
 - keep the plan detailed enough that it can be persisted via `/write-plan` without re-planning
 - do not assume the plan is approved just because it is coherent
 - if critical information remains missing, state explicit assumptions instead of guessing silently
@@ -120,14 +121,16 @@ Output the plan using this exact structure and section order:
 - `Completion Criteria`:
 - `Execution Notes`:
 - `Implementation Agent`: (optional; overrides plan header)
+- `Commit Policy`: (optional; required only for phases that edit project repositories)
 
-### Phase N:
+### Phase N: <short phase name>
 - `Objective`:
 - `Depends On`:
 - `Deliverables`:
 - `Completion Criteria`:
 - `Execution Notes`:
 - `Implementation Agent`: (optional; overrides plan header)
+- `Commit Policy`: (optional; required only for phases that edit project repositories)
 
 ## Acceptance Criteria
 

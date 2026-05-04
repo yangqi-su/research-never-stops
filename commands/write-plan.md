@@ -32,6 +32,7 @@ Accepted plan structure:
 - `Created`: `YYYY-MM-DD HH:MM` or `TBD`
 - `Status`: `draft`, `ready`, `in-progress`, `blocked`, or `done`
 - `Owner`: `user`, `primary agent`, or both
+- `Implementation Agent`: `implementation` or `pro-implementation`
 
 ## Goal
 
@@ -55,6 +56,8 @@ Accepted plan structure:
 - `Deliverables`:
 - `Completion Criteria`:
 - `Execution Notes`:
+- `Implementation Agent`: (optional; overrides plan header)
+- `Commit Policy`: (optional; required only for phases that edit project repositories)
 
 ### Phase N: <short phase name>
 
@@ -63,6 +66,8 @@ Accepted plan structure:
 - `Deliverables`:
 - `Completion Criteria`:
 - `Execution Notes`:
+- `Implementation Agent`: (optional; overrides plan header)
+- `Commit Policy`: (optional; required only for phases that edit project repositories)
 
 ## Acceptance Criteria
 
@@ -70,7 +75,7 @@ Accepted plan structure:
 
 ## Workflow Notes
 
-- `Implementation Cadence`: use fresh `implementation` agent sessions across phases when helpful
+- `Implementation Cadence`: use fresh implementation agent sessions across phases, respecting per-phase `Implementation Agent` overrides
 - `Phase Transition Rule`: only advance after the current phase completion criteria are met or the user explicitly approves a plan change
 - `Archive Condition`: archive only after all required phases are complete or intentionally skipped with recorded justification
 ```
