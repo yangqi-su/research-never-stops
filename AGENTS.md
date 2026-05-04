@@ -43,9 +43,10 @@ General behavioral guidelines for working in this repository. Keep these rules b
 - Use specialized agents, commands, and skills only when the task clearly calls for them.
 - Detailed workflow, execution, and command behavior belongs in the relevant agent, command, or skill instructions, not here.
 
-## IMPORTATN RULES:
+## IMPORTANT RULES:
 
 - when using `rg` add `--no-ignore-vcs` to ignore `.gitgnore`
+- `Glob` is not always useful because it respects `.gitignore`, use `rg --no-ignore-vcs` or `grep` and `ls` instead
 - NEVER use `Explore` agent to only read files, read files using `read` tool 
 - `plan` agent should NEVER write or create files or directories
 - `build` agent should ONLY use `edit` tool to perform file edits and `write` tool to create/overwrite files

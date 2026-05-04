@@ -172,10 +172,13 @@ Rules:
 - only read other relevant parts of `copilot/memory/` if certain errors keep on happening
 - preserve existing project conventions and unrelated user changes
 - keep edits small, reviewable, and directly tied to the current phase
-- if the plan sibling directory or any edited file is inside a git repository, run `git status` before the first edit; if uncommitted changes from prior work exist, commit them first with a message like `phase-NN: checkpoint before new changes`
-- commit immediately after EVERY file edit that creates, modifies, or deletes a tracked or new file — do not wait for multiple edits to accumulate
-- if you make 3 edits and have not yet committed, you are violating this rule; correct it immediately
-- every commit message must include the current phase identifier (e.g. `phase-02: add preprocessing script`)
+- YOU reside in the project root (`pwd -P` will show you where that is), it is usually a git repo, but we never commit anything in this repo and never try to overide its .gitignore, thus do not just run `git status` because that will only show you what is in the project root repo.
+- look for repos inside of the directory in are in first
+- If the plan invovles edits to a specific repositiory that is inside project root, run `git status <repository-name>` on that repo before the first edit; if uncommitted changes from prior work exist, commit them first with a informative message.
+- NEVER COMMIT files in the `./copilot` directory or `sibling plan directory`
+- EMPHASIZING AGAIN: NEVER make git commits in project root despite it being a git repo.
+- when a plan requires development of non project root repository, make at least a commit every 5 file changes. if not then you are violating this rule; correct it immediately
+- every commit message must NOT include the current phase identifier (e.g. `DO NOT make commit messages like this phase-02: add preprocessing script`)
 - never end the agent session with uncommitted changes in the working tree
 - prefer lightweight inspection of scripts, configs, and code over reading large outputs or artifacts
 - perform the minimum validation needed to confirm the change is wired correctly before or alongside execution

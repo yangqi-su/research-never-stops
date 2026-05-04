@@ -1,6 +1,6 @@
 ---
 description: Draft a full experiment plan in conversation without writing files
-agent: plan
+agent: pro-plan
 ---
 Draft or refine one full experiment plan using the current conversation.
 

@@ -24,6 +24,9 @@ permission:
     "*": deny
     "workflow": allow
     "implementation": allow
+    "pro-implementation": allow
+    "pro-think": allow
+    "think": allow
     "review": allow
     "analysis": allow
     "status": allow
@@ -38,6 +41,7 @@ Core responsibilities:
 
 - treat `workflow` as the persistent state and decision authority for one full plan
 - treat `implementation` as the worker that owns code changes, lightweight validation, execution routing, actual local or Slurm execution, and job monitoring for the current plan phase
+- resolve the implementation agent for the current phase from the plan (phase-level `Implementation Agent` field, then plan header `Implementation Agent`, then user override if provided, default to `implementation`); route all implementation work for that phase to the resolved agent
 - treat `review` as an optional escalation path for failures, risky changes, or unclear results
 - treat `analysis` as the interpreter for meaningful phase outputs when the current phase needs a decision-ready interpretation before the next phase or archival
 - treat `status` as a research-memory subagent that is invoked explicitly when a memory refresh is needed; it is not part of the normal command-driven workflow loop
@@ -58,15 +62,16 @@ Workflow loop:
 3. Create or resume the persistent `workflow` sidecar session.
    - Store its `task_id` in `workflow-session-root.json` inside plan sibling directory.
    - If the saved `task_id` cannot be resumed, start a new `workflow` session and overwrite `workflow-session-root.json`.
-   - Maintain `agent-sessions-root.json` in plan sibling directory as an advisory record of root-family leaf-agent task ids, phase bindings, and lifecycle status.
+   - Maintain `agent-sessions-root.json` in plan sibling directory as an advisory record of leaf-agent task ids, phase bindings, and lifecycle status.
 4. If the user supplied interruption feedback, suspected subagent bugs, preferred next actions, or reasons for a course correction, pass that intervention context to `workflow` with minimal paraphrase.
 5. Read the `workflow` decision.
-6. If the next stage is `implementation (resume existing agent)` and `Auto Continue` is `yes`, try to resume the current-phase implementation `task_id` recorded in `agent-sessions-root.json`; if it is missing, stale, phase-mismatched, or cannot be resumed, resume `workflow` with that evidence instead of guessing.
-7. If the `workflow` agent recommends `implementation (start fresh agent)`, you MUST start a new `implementation` agent and record the `task_id` in `agent-sessions-root.json`, DO NOT resume the previous `implementation` agent.
-8. If the next stage is `review`, or `analysis` and `Auto Continue` is `yes`, invoke that subagent exactly as directed and record its `task_id` in `agent-sessions-root.json`. When dispatching any leaf agent, explicitly include the plan sibling directory path in the agent's context; never let leaf agents infer, guess, or invent the path.
-9. If the next stage is plain `implementation` and `Auto Continue` is `yes`, prefer resuming the saved implementation session for the current phase when it is present and still phase-compatible; otherwise start a fresh implementation session and record the resulting `task_id` in `agent-sessions-root.json`.
-10. Resume the same `workflow` session after every leaf stage.
-11. Continue looping until a terminal state is reached.
+6. If the next stage is an implementation variant (`implementation`, `implementation (resume existing agent)`, `implementation (start fresh agent)`, `pro-implementation`, `pro-implementation (resume existing agent)`, or `pro-implementation (start fresh agent)`) and `Auto Continue` is `yes`, determine the specific agent name from the workflow recommendation:
+    - If the recommendation includes `resume existing agent`, try to resume that specific agent's `task_id` from `agent-sessions-root.json` for the current phase; if missing, stale, phase-mismatched, or unresumable, resume `workflow` with that evidence.
+    - If the recommendation includes `start fresh agent`, start a new session of the specified agent and record the `task_id` in `agent-sessions-root.json` under the correct agent key.
+    - If the recommendation is a plain agent name without a modifier, prefer resuming the saved session for that agent in the current phase when phase-compatible; otherwise start fresh.
+7. If the next stage is `review`, or `analysis` and `Auto Continue` is `yes`, invoke that subagent exactly as directed and record its `task_id` in `agent-sessions-root.json`. When dispatching any leaf agent, explicitly include the plan sibling directory path in the agent's context; never let leaf agents infer, guess, or invent the path.
+8. Resume the same `workflow` session after every leaf stage.
+9. Continue looping until a terminal state is reached.
 
 Terminal states:
 
@@ -91,7 +96,7 @@ Loop rules:
 - do not inspect task-specific problem files, logs, configs, or code, ANY TYPE OF REASONING SHOULD BE delegated to the `workflow` agent, which may then choose `review` or another stage
 - when the user provides reasons or a preferred next action, ALWYAS directly pass that guidance through to `workflow` agent as evidence to evaluate, IT IS NOT instruction for you to implement directly
 - assume `implementation` agent should usually return only after any required execution reaches a workflow-meaningful state with evidence; treat `wait` as exceptional rather than the default Slurm path
-- do not resume a saved implementation session unless `workflow` explicitly directs `implementation (resume existing agent)` or plain `implementation` and the saved root-family phase binding is still coherent
+- do not resume a saved implementation session unless `workflow` explicitly directs `implementation (resume existing agent)` or plain `implementation` and the saved phase binding is still coherent
 - preserve unrelated user changes and avoid broadening scope beyond the current full plan
 - prefer file tools over shell for reading and writing state files
 - avoid loading large data, logs, checkpoints, or result artifacts into context
@@ -124,6 +129,12 @@ Loop rules:
   "updated_at": "YYYY-MM-DD HH:MM:SS",
   "sessions": {
     "implementation": {
+      "task_id": "ses_...",
+      "phase": "Phase 1: <short phase name>",
+      "status": "running",
+      "resume_mode": "resume-ok"
+    },
+    "pro-implementation": {
       "task_id": "ses_...",
       "phase": "Phase 1: <short phase name>",
       "status": "running",

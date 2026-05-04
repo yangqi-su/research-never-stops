@@ -35,6 +35,7 @@ Required summary header:
 - `Path State`: `active` or `archive`
 - `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
 - `Phase`: one-line description of the current active phase or `none`
+- `Implementation Agent`: implementation or pro-implementation
 - `Timestamp`: creation or update time if known
 
 Write `workflow-summary.md` using this exact section order:
@@ -42,9 +43,14 @@ Write `workflow-summary.md` using this exact section order:
 ```md
 # Workflow Summary
 
-- `Plan ID`: 
-- `Plan`: 
-- `Plan Sibling Directory`: 
+- `Plan ID`: `plans-<timestamp>-<slug>`, `copilot-plans-<timestamp>-<slug>`, or `TBD`
+- `Plan`: current path to the plan file
+- `Plan Sibling Directory`: current path to the plan's sibling directory
+- `Path State`: `active` or `archive`
+- `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
+- `Phase`: one-line description of the current active phase or `none`
+- `Implementation Agent`: implementation or pro-implementation
+- `Timestamp`: creation or update time if known
 
 ## Goal
 
@@ -65,7 +71,7 @@ Write `workflow-summary.md` using this exact section order:
 
 ## Next Step
 
-- `Next Stage`: `implementation`, `implementation (resume existing agent)`, `implementation (start fresh agent)`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
+- `Next Stage`: `implementation`, `implementation (resume existing agent)`, `implementation (start fresh agent)`, `pro-implementation`, `pro-implementation (resume existing agent)`, `pro-implementation (start fresh agent)`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
 - `Auto Continue`: `yes` or `no`
 - `Decision Basis`: short factual reason why this is the correct next stage
 - `Goal`: one concrete next action for the current phase
@@ -85,14 +91,15 @@ Rules:
 - stay bound to one `Plan ID` for the life of this subagent session unless `orchestrator` explicitly redirects you
 - ensure the plan sibling directory exists; create it if missing
 - expect `orchestrator` to persist this session's `task_id` in `workflow-session-root.json` inside the plan sibling directory
-- expect `orchestrator` to maintain `agent-sessions-root.json` in the plan sibling directory as an advisory ledger of root-family leaf-agent task ids and phase bindings
+- expect `orchestrator` to maintain `agent-sessions-root.json` in the plan sibling directory as an advisory ledger of leaf-agent task ids and phase bindings
 - treat the plan file as the canonical approved handoff artifact
 - keep scope to one full plan and one current active phase within that plan
 - a full plan may contain multiple ordered phases; determine the current phase from the plan plus the latest phase evidence rather than narrowing the plan into an early permanent substep
 - phase advancement belongs to you the `workflow` agent; only move to the next phase when the current phase completion criteria are met or when the user explicitly approves a plan change
-- use `implementation (resume existing agent)` whenever the saved root-family implementation session is still coherent for the current plan state and continuing there is the lowest-friction way to preserve context
-- YOU MUST ALWAYS suggest `implementation (start fresh agent)` when a new phase of the plan begins, when the user explicitly asks for a fresh implementation agent, when resuming from Copilot-owned progress into the root family, or when the prior root implementation session is stale, phase-mismatched, or otherwise no longer the right place to continue work
-- if in doubt about the next `implementation` agent suggest `implementation (start fresh agent)`
+- read the current phase's `Implementation Agent` field from the plan file; if absent, fall back to the plan header `Implementation Agent` field; default to `implementation`; use the specific resolved agent name (e.g. `pro-implementation` instead of `implementation`) in the `Next Stage` recommendation and in `workflow-summary.md`
+- use `<resolved-agent> (resume existing agent)` whenever the saved implementation session is still coherent for the current plan state and continuing there is the lowest-friction way to preserve context
+- YOU MUST ALWAYS suggest `<resolved-agent> (start fresh agent)` when a new phase of the plan begins, when the user explicitly asks for a fresh implementation agent, or when the prior implementation session is stale, phase-mismatched, or otherwise no longer the right place to continue work
+- if in doubt about the next implementation agent suggest `<resolved-agent> (start fresh agent)`
 - read any existing `implementation-summary.md`, `review-summary.md`, and `analysis-summary.md` fresh from disk before deciding the current state
 - if `implementation-summary.md` references `implementation-phases/` detail files, rely on the top-level ledger first and open only the current or clearly relevant phase detail file when the ledger is insufficient or ambiguous
 - if `workflow-summary.md` already exists, update it in place instead of assuming a clean run

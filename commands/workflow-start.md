@@ -8,7 +8,7 @@ Behavior:
 
 - treat the arguments as a plan selector or resume hint, not as a request to draft or write a new plan inline
 - if the arguments identify an existing active plan, use it directly
-- if exactly one active plan exists and the arguments are empty, use it directly
+- if exactly one active plan exists and the arguments are empty, use it directly and begin the agent delegation process without stopping
 - if there is no suitable active plan, stop and tell the user to use `/draft-plan` followed by `/write-plan` first
 - resolve active plans from `copilot/plans/active/`
 - create or resume `workflow-session-root.json` for that plan
