@@ -10,6 +10,8 @@ Behavior:
 - discover plans by directly reading `copilot/plans/`, `copilot/plans/active/`, and `copilot/plans/archive/` from the filesystem rather than using glob-style or git-aware discovery
 - treat ignored plan directories as valid status input; `.gitignore` must not affect plan discovery
 - compare discovered plans and run-directory summaries against `copilot/memory/index.json` first, then inspect only the missing or stale plan evidence in detail
+- when many plans exist, prioritize missing, stale, active, recently changed, or directly relevant plans instead of rereading all archived evidence
+- reconcile new evidence against existing memory and update or mark superseded findings, fixes, watchouts, and conclusions rather than only appending new entries
 - use the root `AGENTS.md` only as secondary project framing after plan discovery; do not read nested `README.md` files during normal updates
 - if `copilot/plans/active/` and `copilot/plans/archive/` are absent or unreadable, report that directly and refresh only minimal memory instead of inferring workflow history from unrelated repo files
 - update only the affected memory artifacts under `copilot/memory/`, including relevant per-plan files, `copilot/memory/index.json`, and aggregate files whose conclusions materially changed
@@ -19,6 +21,7 @@ Behavior:
 - prioritize active plans when updating the current workspace view
 - use archived plans heavily for durable fixes, watchouts, and plan history
 - only elevate repeated, costly, difficult, or broadly reusable lessons into `copilot/memory/watchouts.md` and `copilot/memory/fixes.md`
+- mark older fixes or watchouts as superseded when newer confirmed evidence replaces them, and mark unresolved conflicts as `uncertain`
 - if memory has not been initialized yet, initialize it first and then continue the refresh
 - treat `$ARGUMENTS` as an optional plan selector, scope hint, or user preference about what to emphasize
 

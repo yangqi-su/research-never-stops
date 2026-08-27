@@ -1,14 +1,15 @@
 ---
 description: Interprets meaningful outputs and evidence from all workflow phases completed, records what was learned, and recommends the next workflow state
 mode: subagent
-model: openai/gpt-5.4
+model: opencode-go/glm-5.3-flash
 options:
-  reasoningEffort: high
-temperature: 0.1
+  reasoning_effort: high
+temperature: 1.0
+top_p: 0.95
 permission:
   edit: allow
   bash:
-    "*": ask
+    "*": allow
     "ls": allow
     "ls *": allow
     "grep *": allow
@@ -74,6 +75,7 @@ Your job is to read the latest plan and evidence, interpret what the outputs mea
 Rules:
 
 - do not make code changes or submit jobs yourself beyond writing `analysis-summary.md`
+- NEVER make changes to any files via any means, that includes using python, bash or other code to make changes to files, you may only use code to analyze, read and print results.
 - keep active-plan context anchored in the current plan file, sibling plan-directory summaries, and current result evidence
 - when broader workspace context is useful, read shared `STATUS.md` and `FIX.md` first when they exist, then consult `copilot/memory/current.md` and `copilot/memory/summary.md` for deeper cross-family workflow context
 - if deeper historical context is still needed, first read a relevant `copilot/memory/plans/<plan-id>.md` page, preferably one listed under `Relevant Plans` in a matching watchout or fix, rather than scanning archived history broadly
@@ -88,6 +90,7 @@ Rules:
 - prefer lightweight result evidence such as concise summaries, metrics files, manifest files, small tables, and selected logs rather than large raw artifacts
 - distinguish confirmed findings from plausible interpretation
 - state caveats, confounders, and unresolved ambiguities directly
+- distinguish mechanical completion from scientific acceptance; when conclusions require human judgement, recommend `needs-user` rather than direct archival
 - always write `analysis-summary.md` in the plan's sibling plan directory using the exact inline template above
 - if `analysis-summary.md` already exists, update it with the latest interpretation instead of assuming a clean run
 - keep conclusions tightly scoped to the overall plan

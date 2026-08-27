@@ -55,16 +55,16 @@ If any of the above is unclear and materially affects safe submission, ask or st
 
 For this environment:
 
-- include `#SBATCH --partition=ihc,all`
+- include `#SBATCH --partition=ihc`
 - include `#SBATCH --account=ihc`
-- add `#SBATCH --nodelist=ihc-h200-1` only when the run clearly requires that GPU node in this environment
-
+- add `#SBATCH --nodelist=ihc-h200-1` by default if GPU is required unless user specifies another GPU
+- add `#SBATCH --nodelist=igsdgx-1` user clearly requires that GPU node in this environment
 ## Submission Modes
 
 Always classify the chosen route as one of:
 
 - `standard-gres`
-- `opportunistic-no-gres`
+- `opportunistic-no-gres` (DEPRECATED NO LONGER POSSIBLE)
 
 Record that mode in the execution evidence and summary.
 
@@ -83,11 +83,12 @@ Use it by default for:
 For the standard path:
 
 - request GPUs with `--gres=gpu:N` or the cluster's equivalent
+- if `--gres=gpu:N` fails, find out the `<GPU NAME>` on that node and submit with `--gres=gpu:<GPU Name>:N`
 - keep normal Slurm accounting and queue behavior
 - allow single-node or multi-node execution
 - monitor with `squeue` and `sacct`, plus a heartbeat source from logs or outputs
 
-## Fallback Eligibility Gate
+## Fallback Eligibility Gate (DEPRECATED DO NOT USE)
 
 Only consider `opportunistic-no-gres` if all of the following are true:
 
@@ -101,11 +102,11 @@ Only consider `opportunistic-no-gres` if all of the following are true:
 
 If any gate fails, do not use the fallback.
 
-## Probe-And-Run Fallback Flow
+## Probe-And-Run Fallback Flow (DEPRECATED DO NOT USE)
 
 The v1 fallback uses two separate jobs: a small probe job followed by the real run job.
 
-### Probe Job
+### Probe Job (DEPRECATED DO NOT USE)
 
 Submit a small non-GRES job that:
 
@@ -151,7 +152,7 @@ For all GPU Slurm jobs:
 - do not treat `COMPLETED` alone as success; verify expected outputs or success signals
 - use `wait` only when the job is healthy or normally queued, the next meaningful check is materially later, and a concrete resume condition is recorded
 
-Additional monitoring for `opportunistic-no-gres`:
+Additional monitoring for `opportunistic-no-gres` (DEPRECATED DO NOT USE):
 
 - re-check the chosen GPUs periodically while the job is running
 - distinguish the job's own processes from foreign processes if possible

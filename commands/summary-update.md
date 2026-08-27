@@ -1,14 +1,15 @@
 ---
-description: Refresh shared STATUS.md and FIX.md from root and Copilot memory
+description: Refresh shared STATUS.md and FIX.md from canonical and legacy memory
 agent: summary-link
 ---
-Refresh the shared cross-workflow summary layer for this project.
+Refresh the shared workspace summary layer for this project.
 
 Behavior:
 
-- treat `STATUS.md` and `FIX.md` as shared cross-workflow entrypoints derived primarily from `copilot/memory/` and secondarily from legacy `memory/` when it exists
+- treat `STATUS.md` and `FIX.md` as shared workspace entrypoints derived primarily from `copilot/memory/` and secondarily from legacy `memory/` when it exists
 - inspect `copilot/memory/` first and `memory/` second when those directories exist
 - compare existing shared summaries against the current stack-local memory files before deciding what to update
+- prefer active memory entries over superseded ones; include superseded fixes or watchouts only when they explain an important historical trap or transition
 - prefer stack-local `current.md`, `summary.md`, `watchouts.md`, `fixes.md`, and `index.json` as the normal evidence sources
 - use `copilot/memory/plans/` first and `memory/plans/` only when legacy attribution or conflict resolution is still needed
 - do not scan `copilot/plans/` or `plans/` directly during normal shared-summary refresh when usable memory is available

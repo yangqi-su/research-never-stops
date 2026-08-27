@@ -1,9 +1,9 @@
 ---
 description: Implements the current approved plan phase, performs lightweight validation, decides local versus Slurm execution, runs work when needed, and writes a structured implementation summary
 mode: subagent
-model: openai/gpt-5.4
+model: openai/gpt-5.6-luna
 options:
-  reasoningEffort: high
+  reasoningEffort: max
 temperature: 0.2
 permission:
   edit: allow
@@ -124,6 +124,16 @@ Write the detailed record for the current phase to `implementation-phases/phase-
 
 ## Validation
 
+## Commit
+
+- `Commit Policy`:
+- `Commit Required`: `yes` or `no`
+- `Commit Status`: `committed`, `not-needed`, `blocked`, or `skipped`
+- `Repository`: explicit repository path or `none`
+- `Commit Hash`: short hash or `none`
+- `Commit Message`: short message or `none`
+- `Reason If Not Committed`: short factual reason or `none`
+
 ## Execution Decision
 
 > Fill Slurm-specific fields (Queue State, Heartbeat Source, Wait Justified, Resume Condition, Monitoring) based on the loaded execution skill's report-back requirements.
@@ -163,17 +173,23 @@ Rules:
 - MOST IMPORTANT: DO NOT OVERWRITE earlier phase records.
 - treat the approved plan file plus the latest `workflow-summary.md` phase selection as the source of truth
 - keep active-plan context anchored in the current plan file, shared `STATUS.md`, shared `FIX.md`, `copilot/memory/watchouts.md`, `copilot/memory/fixes.md`, and sibling run-directory summaries when they exist
-- read shared `STATUS.md` and `FIX.md` first when they exist for cross-workflow context, then use `copilot/memory/watchouts.md` and `copilot/memory/fixes.md` for recurring pitfalls
+- read shared `STATUS.md` and `FIX.md` first when they exist for broader workspace context, then use `copilot/memory/watchouts.md` and `copilot/memory/fixes.md` for recurring pitfalls
 - YOU reside in the project root (`pwd -P` will show you where that is), but the project root may only be the workflow/control repository; do not assume it is the code repository to edit.
 - look for target repositories inside the current directory first when the plan edits project code.
 - before editing a target repository, inspect that repository's working tree with an explicit repository path; do not rely on project-root `git status` when the target repo is nested.
 - if unrelated uncommitted user changes exist in the target repository, stop and ask before editing rather than committing or modifying them.
-- follow the current phase's `Commit Policy` when one is specified.
-- if no `Commit Policy` is specified, do not commit unless the user explicitly asks.
+- resolve the effective current phase `Commit Policy` before editing: use `workflow-summary.md` when it includes the current phase policy, otherwise read the current phase directly from the approved plan; if neither specifies one, treat it as `none`.
+- a non-empty current phase `Commit Policy` in an approved plan is explicit user-approved commit authorization for that phase.
+- when the effective current phase `Commit Policy` requires a commit, do not wait for an additional live user instruction before committing.
+- follow the effective current phase `Commit Policy` exactly when one is specified.
+- if the effective current phase `Commit Policy` is `none`, do not commit unless the user explicitly asks.
+- if the effective current phase `Commit Policy` requires a commit, create it after the policy conditions are met unless blocked by unrelated user changes, failed validation, ambiguous target repository, or no repository changes to commit.
+- if a commit that is required by policy is not made, record the concrete blocking reason; do not claim the user failed to ask for a commit.
 - commit only files that belong to the target project repository and current phase.
 - NEVER COMMIT files in `./copilot`, the plan sibling directory, workflow-control directories, or project-root workflow scaffolding.
 - EMPHASIZING AGAIN: NEVER make git commits in project root despite it being a git repo unless the plan explicitly names project root as the target code repository.
 - every commit message must NOT include the current phase identifier (e.g. `DO NOT make commit messages like this phase-02: add preprocessing script`)
+- whenever a commit is created, record the repository path, commit hash, and commit message in the current phase detail file and summarize the commit outcome in `implementation-summary.md`.
 - keep edits small, reviewable, and directly tied to the current phase
 - NEVER write outputs, intermediate files, logs, or artifacts to `/tmp/` or any system temp directory — all outputs go in the plan sibling directory
 - when scripts or tools default to `/tmp/`, redirect them to the plan sibling directory explicitly (e.g. `--output-dir`, `TMPDIR=`, `--tmpdir`, or environment variable overrides)

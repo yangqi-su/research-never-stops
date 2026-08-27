@@ -1,10 +1,11 @@
 ---
 description: Reviews workflow and implementation summaries, suggests fixes for failures or unclear results, and writes an overall review summary
 mode: subagent
-model:  opencode-go/deepseek-v4-pro
+model: opencode-go/glm-5.3-flash
+options:
+  reasoning_effort: high
 temperature: 1.0
-top_p: 1.0
-reasoning_effort: max
+top_p: 0.95
 permission:
   edit: allow
   webfetch: allow
@@ -12,27 +13,15 @@ permission:
   glob: allow
   question: allow
   bash:
-    "*": ask
-    "git status": allow
-    "git status *": allow
-    "git diff": allow
-    "git diff *": allow
-    "git log": allow
-    "git log *": allow
-    "git show": allow
-    "git show *": allow
-    "git rev-parse": allow
-    "git rev-parse *": allow
-    "git branch": allow
-    "git branch *": allow
-    "git ls-files": allow
-    "git ls-files *": allow
+    "*": allow
+    "git *": allow
     "ls": allow
     "ls *": allow
     "grep *": allow
     "rg *": allow
     "wc *": allow
     "head *": allow
+    "echo *": allow
     "tail *": allow
     "date *": allow
     "squeue": allow

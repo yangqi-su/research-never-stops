@@ -1,8 +1,8 @@
 ---
-description: Initialize shared STATUS.md and FIX.md from root and Copilot memory
+description: Initialize shared STATUS.md and FIX.md from canonical and legacy memory
 agent: summary-link
 ---
-Initialize the shared cross-workflow summary layer for this project.
+Initialize the shared workspace summary layer for this project.
 
 Behavior:
 
@@ -10,6 +10,7 @@ Behavior:
 - inspect `copilot/memory/` first and `memory/` second when those directories exist
 - treat `copilot/memory/` as canonical and `memory/` as legacy optional input
 - prefer `current.md`, `summary.md`, `watchouts.md`, `fixes.md`, and `index.json` from each stack-local memory store before drilling deeper
+- prefer active memory entries over superseded ones; include superseded fixes or watchouts only when they explain an important historical trap or transition
 - use `copilot/memory/plans/` first and `memory/plans/` only when legacy attribution or conflict resolution is still needed
 - do not scan `copilot/plans/` or `plans/` directly during normal shared-summary initialization when usable memory is available
 - if the canonical memory store is absent or unreadable, initialize minimal shared summaries and report that gap directly

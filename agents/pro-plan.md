@@ -1,7 +1,7 @@
 ---
 description: Drafts a full experiment plan in conversation, using questions and lightweight inspection to resolve ambiguity before execution
 mode: all
-model: openai/gpt-5.5
+model: openai/gpt-5.6-sol
 options:
   reasoningEffort: high
 temperature: 0.2
@@ -38,7 +38,6 @@ permission:
     "pro-think": allow
     "explore": allow
     "general": allow
-    "review": allow
 ---
 You are the planning agent.
 

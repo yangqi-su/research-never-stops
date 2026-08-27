@@ -49,12 +49,18 @@ If any of the above is unclear and materially affects safe submission, ask or st
 
 ## Cluster Defaults
 
-For this environment:
+For this environment, you have 2 options:
+- use the `ihc-grid-1-1-1` node for lower number of slurm jobs (recommended for most jobs)
+  - include `#SBATCH --partition=ihc`
+  - include `#SBATCH --account=ihc`
+  - include `#SBATCH --nodelist=ihc-grid-1-1-1`
 
-- include `#SBATCH --partition=ihc,all`
-- include `#SBATCH --account=ihc`
-- include `#SBATCH --nodelist=bellatrix,grid-2-1-1,grid-2-1-2,grid-2-1-3,grid-2-1-4,grid-2-1-5,grid-2-1-6,grid-2-1-7,grid-2-1-8,grid-2-1-9,juggernaut,ihc-grid-1-1-1`
-- do not add GPU-node pinning such as `#SBATCH --nodelist=ihc-h200-1` unless the user or project explicitly requires a specific node
+-OR for a larger set of jobs (more than 50 jobs, like a large jobarray)
+  - include `#SBATCH --partition=all`
+  - include `#SBATCH --account=ihc`
+  - include `#SBATCH --nodelist=bellatrix,grid-2-1-1,grid-2-1-2,grid-2-1-3,grid-2-1-4,grid-2-1-5,grid-2-1-6,grid-2-1-7,grid-2-1-8,grid-2-1-9,juggernaut`
+
+- do not add GPU-node pinning such as `#SBATCH --nodelist=ihc-h200-1` since this is for cpu jobs only
 
 ## Submission Guidance
 

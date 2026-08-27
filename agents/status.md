@@ -65,6 +65,9 @@ Always refresh from current evidence before editing:
 - do not use glob-style discovery, git state, or ignore-aware search to decide whether plans exist; `.gitignore` does not matter for status discovery
 - after direct plan discovery, read `copilot/memory/index.json` and other existing memory files to determine what has already been recorded
 - compute the delta between discovered plan evidence and recorded memory before reading plan contents in detail
+- when many active or archived plans exist, do not reread all plan files and run directories by default; inspect only missing, stale, recently changed, active, or directly relevant plan evidence
+- use aggregate memory files first to understand existing conclusions before drilling into plan pages
+- when the user asks for a focused update, restrict memory refresh to the named plan, topic, method, repository, or result family when possible
 - for every missing or stale plan, read the plan file and its sibling run directory outputs before inspecting broader repo context
 - prefer plan-directory outputs such as `workflow-summary.md`, `implementation-summary.md`, `review-summary.md`, `analysis-summary.md`, and `result-manifest.md` when they exist
 - treat `implementation-summary.md` as the primary implementation overview; if it references `implementation-phases/` detail files, read only the current or clearly relevant phase detail files when the ledger is insufficient
@@ -77,7 +80,7 @@ Always refresh from current evidence before editing:
 
 Core rules:
 
-- treat `copilot/memory/` as the canonical workspace memory store for both workflow families
+- treat `copilot/memory/` as the canonical workspace memory store for the research workflow
 - keep memory concise, factual, and easy for weaker agents to scan quickly
 - keep exact provenance primarily in `copilot/memory/index.json`; keep top-level narrative files path-light
 - make the first reasoning step a comparison between discovered plans on disk and recorded plans in `copilot/memory/index.json`
@@ -85,6 +88,12 @@ Core rules:
 - keep `copilot/memory/summary.md` focused on the whole workspace story across major phases, not just the latest plan cluster
 - preserve useful prior memory unless it is contradicted, superseded, or clearly low-value noise
 - clearly separate confirmed facts from inference and from recommended actions
+- actively identify whether new findings, fixes, watchouts, or conclusions supersede older memory entries
+- when newer confirmed evidence contradicts, refines, or replaces older memory, update aggregate memory to reflect the current best understanding instead of simply appending new material
+- mark older fixes or watchouts as superseded when they remain historically useful but are no longer current
+- remove or compress older entries when they are low-value, one-off, or fully replaced by a clearer current entry
+- preserve provenance by pointing to both superseding and superseded plan memory pages when useful
+- distinguish confirmed supersession, likely supersession, and unresolved conflict; when evidence conflicts and no clear supersession exists, mark the relevant memory as `uncertain` and record what evidence would resolve it
 - do not store secrets, raw tool outputs, giant logs, or full transcripts in memory files
 - if evidence is missing or ambiguous, say so directly instead of guessing
 - tips and fixes should be operational: short trigger, short cause, what to do, what to avoid, and where the evidence lives
@@ -93,6 +102,7 @@ Core rules:
 - fold stage-level detail into the plan page only when it adds durable value; do not mirror every source summary section-by-section
 - only promote an issue into `copilot/memory/watchouts.md` or `copilot/memory/fixes.md` when it was repeated, costly to diagnose, difficult to fix, or likely to recur across plans
 - when active and archived plans disagree on a general lesson, prefer the most recent confirmed evidence and note the conflict briefly
+- when active and archived plans disagree and the newer evidence clearly supersedes the older lesson, update or mark the older lesson as superseded rather than carrying both forward as equally current
 - do not conclude that no plans exist unless direct directory reads of `copilot/plans/active/` and `copilot/plans/archive/` support that conclusion
 - do not substitute broader repo orientation for missing plan discovery; if plan discovery fails, say so plainly instead of inferring workflow history from unrelated files
 
@@ -223,6 +233,8 @@ Write `copilot/memory/watchouts.md` using this exact section order:
 ### short watchout title
 
 - `Applies To`: short scope
+- `Status`: `active`, `superseded`, or `uncertain`
+- `Superseded By`: watchout title or `none`
 - `Tags`: short comma-separated tags
 - `Watch out for`: short failure mode or fragile area
 - `What to do`: short recommended behavior
@@ -244,6 +256,8 @@ Write `copilot/memory/fixes.md` using this exact section order:
 ### YYYY-MM-DD - short fix title
 
 - `Trigger`: short symptom or scenario
+- `Status`: `active`, `superseded`, or `uncertain`
+- `Superseded By`: fix title or `none`
 - `Cause`: short factual cause or `unknown`
 - `Do`: short recommended action
 - `Avoid`: short misuse or regression pattern
@@ -329,8 +343,9 @@ Additional writing rules:
 
 - preserve the section order above for each file
 - prefer short bullets over dense prose
-- keep `copilot/memory/current.md` focused on what is true now across the workspace
-- keep `copilot/memory/summary.md` focused on the whole workspace story across completed and decision-relevant work, not just the newest plan cluster
+- keep `copilot/memory/current.md` focused on what is true now across the workspace, current best conclusions, active priorities, and current blockers; avoid carrying forward outdated priorities from archived plans unless still relevant
+- keep `copilot/memory/summary.md` focused on the whole workspace story and current best understanding across completed and decision-relevant work, not just the newest plan cluster
+- when prior conclusions are superseded, summarize the current conclusion first and mention the older conclusion only if it remains useful context
 - keep `copilot/memory/watchouts.md` focused on concise current operational warnings
 - keep `copilot/memory/fixes.md` focused on reusable lessons rather than one-off noise
 - when a watchout or fix is relevant to a specific historical case, include a `Relevant Plans` pointer so later agents can read the memory plan page before touching original archived evidence
