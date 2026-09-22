@@ -70,7 +70,7 @@ Always refresh from current evidence before editing:
 - when the user asks for a focused update, restrict memory refresh to the named plan, topic, method, repository, or result family when possible
 - for every missing or stale plan, read the plan file and its sibling run directory outputs before inspecting broader repo context
 - prefer plan-directory outputs such as `workflow-summary.md`, `implementation-summary.md`, `review-summary.md`, `analysis-summary.md`, and `result-manifest.md` when they exist
-- treat `implementation-summary.md` as the primary implementation overview; if it references `implementation-phases/` detail files, read only the current or clearly relevant phase detail files when the ledger is insufficient
+- treat bounded top-level summaries as the primary whole-plan overview; read only the current or clearly relevant files under `phase/phase-<id>/` when the summaries are insufficient
 - on initialization for an existing project, backfill from all archived plans as well as active plans
 - read only the root `AGENTS.md` as optional high-level project context after plan discovery and memory diffing; do not read nested `AGENTS.md` files
 - do not read `README.md` files, configs, or `git status` during normal init or update unless the user explicitly asks for broader repo memory or there is no usable plan evidence at all

@@ -144,13 +144,23 @@ For all GPU Slurm jobs:
 
 - monitor scheduler state with `squeue` and `sacct`
 - do not use bash or Python watcher scripts; use direct `sleep` plus repeated scheduler checks
-- use shorter polling intervals for the first few checks, then widen the intervals when the job is healthy and long-running
 - monitor a heartbeat source such as a log file, metric file, checkpoint timestamp, or explicit progress counter
 - classify the run as queued normally, running with heartbeat, running without heartbeat, completed but unverified, blocked due to inactivity, or intentional wait
+- immediately after submission, record job id, queue state, heartbeat source, and the first expected progress signal
+- make one startup follow-up check after about `1 minute` to confirm scheduler state and heartbeat if the job starts quickly
+- before repeated polling, try to estimate ETA from logs or output progress markers
+- prefer explicit log ETA when present; otherwise estimate from completed versus total epochs/steps and observed time per epoch/step across at least two observations
+- treat Slurm wall time as an upper bound only, not as a progress ETA
+- if the ETA is reliable and greater than `15 minutes`, stop active polling and return `wait` with a concrete recommended resume time or resume condition
+- if the ETA is reliable and no more than `15 minutes`, make the next check near the estimated completion time rather than polling at a fixed short interval
+- if ETA is still uncertain after trying to estimate from logs, run at most five delayed checks after `1`, `2`, `4`, `8`, and `16` minutes; after each check, re-estimate ETA and stop early if the job completes or ETA becomes reliable
+- after the fifth uncertain-ETA healthy check, return `wait` rather than continuing to poll
 - if outputs or logs show no meaningful change for more than `20 minutes`, treat the job as `blocked` and record the evidence
-- if the underlying script does not emit enough progress information to support that check, add or request lightweight progress logging before relying on the run
+- if the underlying script emits no progress information, prefer an external heartbeat such as output-file mtime, checkpoint timestamp, or Slurm log growth; only add logging to the script when no external signal exists, and then add at most one periodic print of the loop counter — never a metrics file, status file, or progress framework
 - do not treat `COMPLETED` alone as success; verify expected outputs or success signals
-- use `wait` only when the job is healthy or normally queued, the next meaningful check is materially later, and a concrete resume condition is recorded
+- all shell calls that include `sleep` must use a command timeout longer than the sleep interval plus expected scheduler-check time
+- never repeat fixed-interval polling such as `sleep 110` loops for a healthy long-running job
+- use `wait` when the job is healthy or normally queued, active monitoring is no longer useful, and a concrete resume condition is recorded
 
 Additional monitoring for `opportunistic-no-gres` (DEPRECATED DO NOT USE):
 
@@ -189,6 +199,7 @@ When done, report at least:
 - why standard GRES was used or rejected
 - evidence used to justify the fallback, if used
 - monitoring and heartbeat source
+- progress marker, estimated remaining time, ETA confidence, ETA basis, last heartbeat, and recommended resume time when the job is still running
 - whether the job succeeded, failed, blocked, or was cancelled for safety
 
 ## Red Flags

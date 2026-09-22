@@ -3,10 +3,9 @@
 General behavioral guidelines for working in this repository. Keep these rules broad and durable.
 
 Default behavior:
-YOU work for a scientific researcher whos values quick prototyping over fully robust software engineering. Your employer wants code that is easy to read, follow and understand with comments on crucial components only. Never overengineer something into a software-like package unless explicitly told, the goal is always to use minimal lines of code to achieve your employer's logic and purpose.
+ALWAYS perfer quick prototyping over fully robust software; ALWAYS prefer code that is easy to read and understand over multiple layers of abstractions that are difficult to follow.
 
-Any communication with the user should use researcher oriented but non software engineering language to make it easier for user/employer to understand
-
+Any communication with the user should use researcher and human oriented YET non software engineering language to make it easier for user to understand
 
 ## 1. Think Before Acting
 
@@ -15,14 +14,63 @@ Any communication with the user should use researcher oriented but non software 
 - If multiple reasonable interpretations exist, ask a focused question or state the tradeoff explicitly.
 - Keep multi-step work goal-driven: know what success looks like before making substantial changes.
 
-## 2. Simplicity First
+## 2. Simplicity First for Research Code: Readability and Scope
 
 - Prefer the smallest correct solution.
 - Do not add abstractions, configurability, compatibility layers, or cleanup work that was not needed for the task.
 - Keep scope aligned to the user's request.
-- Keep it simple with minimal validation code
-- DO NOT include fallbacks unless user explicitly suggest fallbacks
-- always write minimal working unit in terms of code size that fits the user's usecase
+
+Optimize for researcher understanding and modifying the supported workflow.
+Prefer straightforward code over both clever brevity and comprehensive
+defensive engineering. Line count alone is not a measure of simplicity.
+
+- Implement the requested use case, not a general framework. Support only
+  the specified inputs, environment, APIs, and execution modes unless broader
+  support is explicitly required.
+
+- Keep the main scientific sequence visible. Use descriptive names and
+  explicit intermediate variables where they clarify data, units, shapes,
+  or scientific meaning. Avoid dense expressions and unnecessary indirection.
+
+- Inspect relevant existing functionality before implementing an operation.
+  Reuse it when its behavior matches the task. Add an adapter only for a
+  concrete mismatch; do not wrap an existing function merely to rename it,
+  forward arguments, or add generic checks.
+
+- Keep one authoritative source for each setting or policy. Derive dependent
+  values rather than maintaining independent copies. Record resolved values
+  for reproducibility without creating another editable source of truth.
+
+- Add helpers when they express a meaningful operation or remove substantial
+  repeated logic. Do not extract trivial helpers just to shorten a function.
+  Small local repetition is preferable to a confusing abstraction.
+
+- The default number of correctness checks in new code is zero. Add a check only
+  when a wrong-but-runnable result would be produced and would not be visible in
+  the output, or when the operation is destructive or expensively irreversible.
+  Shape, dtype, length, key, path, file, and API errors do not qualify: let them
+  propagate with their native error. Place any justified check at the single
+  boundary where it is needed and never repeat it downstream.
+
+- Do not catch an exception merely to print it, re-raise it with a longer
+  message, or continue past it. Add context to an error only when the native
+  error genuinely does not identify the cause.
+
+- Do not add automatic fallbacks, guessed defaults, compatibility branches,
+  or silent data repair unless explicitly requested. When the supported route
+  fails, stop clearly. An observed incompatibility may justify a narrow fix,
+  not support for hypothetical environments.
+
+- Comments should explain scientific reasoning, assumptions, or non-obvious
+  API behavior. Do not narrate obvious statements or repeat plan history.
+
+- Required provenance is exactly this: the resolved config and the command line,
+  written once by the run wrapper. Nothing else is required. Do not write
+  manifests, checksums, run metadata, or status files from inside scientific
+  code, and do not add any record that has no named consumer reading it.
+
+These rules apply to new or modified code. They do not authorize unrelated
+cleanup, changes to scientific behavior, or removal of required safeguards.
 
 ## 3. Surgical Changes
 
@@ -53,7 +101,7 @@ Any communication with the user should use researcher oriented but non software 
 - Use specialized agents, commands, and skills only when the task clearly calls for them.
 - Detailed workflow, execution, and command behavior belongs in the relevant agent, command, or skill instructions, not here.
 
-## IMPORTANT RULES:
+## IMPORTANT RULES
 
 - when using `rg` add `--no-ignore-vcs` to ignore `.gitgnore`
 - `Glob` is not always useful because it respects `.gitignore`, use `rg --no-ignore-vcs` or `grep` and `ls` instead
@@ -63,6 +111,6 @@ Any communication with the user should use researcher oriented but non software 
 - `build` agent should NEVER delegate `implementation` or `pro-implementation` agents unless EXPLICITLY required by the user
 - `plan` agent may use `explore` agent to explore repositories to understand structure of project
 - `plan` agent may use `think` agent or `general` agent for the following subtasks:
-1. validate/review claims 
-2. comeup with ideas/second opinions
-3. perform websearch about a topic or URL
+    1. validate/review claims
+    2. comeup with ideas/second opinions
+    3. perform websearch about a topic or URL

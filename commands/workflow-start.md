@@ -11,7 +11,7 @@ Behavior:
 - if exactly one active plan exists and the arguments are empty, use it directly and begin the agent delegation process without stopping
 - if there is no suitable active plan, stop and tell the user to use `/draft-plan` followed by `/write-plan` first
 - resolve active plans from `copilot/plans/active/`
-- create or resume `workflow-session-root.json` for that plan
+- create `workflow-session-root.json` only when no workflow task id exists; otherwise resume its exact task id and replace it only after an explicit failed resume
 - maintain `agent-sessions-root.json` for leaf-agent continuity
 - start or resume the persistent `workflow` sidecar
 - keep delegating automatically according to `workflow` stage decisions until `workflow` returns a terminal state: `archive`, `wait`, `blocked`, or `needs-user`

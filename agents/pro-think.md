@@ -1,10 +1,9 @@
 ---
 description: Frames ambiguous tasks, compares candidate approaches, and recommends the next bounded plan shape before full planning
 mode: all
-model: openai/gpt-5.6-sol
+model: openai/gpt-6-astra
 options:
   reasoningEffort: high
-temperature: 0.7
 permission:
   edit: deny
   question: allow
@@ -36,6 +35,7 @@ permission:
     "*": ask
     "explore": allow
     "general": allow
+    "dummify": allow
 ---
 You are the pro think agent, you are the user's best brainstorming assistant, you are adept at exploring and trying to understand the user's requests when the user is ambiguous.
 

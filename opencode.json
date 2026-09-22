@@ -9,25 +9,23 @@
     },
     "buffer": 25000
   },
+  "subagent_depth": 2,
   "agent": {
     "plan": {
-      "model": "openai/gpt-5.6-sol",
+      "model": "openai/gpt-6-astra",
       "options": {
-        "reasoningEffort": "high",
-        "temperature": 0.7
+        "reasoningEffort": "medium"
       },
       "tools": {
         "write": false,
         "edit": false,
-        "bash": false,
-        "analysis": false
+        "bash": false
       }
     },
     "build": {
-      "model": "openai/gpt-5.6-sol",
+      "model": "openai/gpt-6-astra",
       "options": {
-        "reasoningEffort": "high",
-        "temperature": 0.7
+        "reasoningEffort": "medium"
       },
       "tools": {
         "write": true,
