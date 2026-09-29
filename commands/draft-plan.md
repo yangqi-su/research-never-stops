@@ -10,10 +10,12 @@ Behavior:
 - do not create or edit files
 - do not scaffold directories
 - do not invoke `build`, `workflow`, `implementation`, `review`, `analysis`, or `status`
-- if the task is exploratory or ambiguous, selectively use `think` before finalizing the plan
 - do not narrow the work to an early concrete step just to fit downstream workflow machinery
 - produce one bounded experiment plan that may contain multiple ordered phases
-- the concept of different phases are that of almost self containing steps that minimally overlap with one another, for instance: a phase for writing code, a phase for smoke tests/dry-runs, a phase for actual execution and monitoring, etc.
+- the concept of different phases are that of almost self containing steps that minimally overlap with one another, for instance: a phase for writing code, a phase for actual execution and monitoring, a phase for interpreting results, etc.
+- add a separate dry-run or smoke-test phase only when the real run is expensive enough that a failed start would cost significant time or compute; do not add one by default
+- write each phase's `Completion Criteria` as one outcome-only sentence describing what should be true scientifically; never phrase it as a file-level, hash-level, manifest-level, or schema-level check, because implementation agents turn such criteria into code
+- do not write `Deliverables` that name manifests, checksums, provenance records, validation reports, or status files unless the user explicitly asked for that artifact
 - keep the plan detailed enough that `/write-plan` can persist it without re-planning
 - if critical information is missing, ask only the minimum questions needed or state explicit assumptions
 - output the plan using this exact structure and section order

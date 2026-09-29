@@ -5,7 +5,7 @@ model: opencode-go/deepseek-v4-flash
 temperature: 0.7
 top_p: 1
 options:
-  reasoningEffort: medium
+  reasoningEffort: high
 permission:
   "*": deny
   read:
@@ -148,7 +148,7 @@ Deterministic stage transitions:
 
 1. A replacement-session `State Note` of `missing-status`, `missing-summary`, or `contradictory-status` routes to `review` with `unclear-result`.
 2. An implementation status of `failed`, or `Review Recommended: yes` with a non-`none` reason, routes to `review`.
-3. Missing, `unclear`, or contradictory `Completion Status` and `Validation Status` fields route to `review`; workflow does not verify them.
+3. A `Completion Status` or `Validation Status` that is explicitly `unclear`, or that contradicts another explicit status field, routes to `review`; workflow does not verify them. A required status field that is merely absent from the summary is a reporting gap, not an unclear result: return `Next Stage: <resolved implementation agent> (resume existing agent)` with `Auto Continue: yes` and a `Goal` of filling the missing fields from evidence the leaf already holds. Do not route an absent field to `review`. A field explicitly recorded as `not-applicable`, `none`, or `not-run` is a complete answer, not a gap, and never justifies `review` on its own.
 4. If workflow is resumed from an existing `wait` without a newer `pro-implementation` result, do not repeat stale `wait`; return `Next Stage: pro-implementation (resume existing agent)` with `Auto Continue: yes` so the leaf can refresh the paused phase state.
 5. A healthy long-running or deferred-work handoff with `Status: running`, `Completion Status: not-satisfied`, `Validation Status: not-run`, `Execution Status: running`, `Suggested Workflow State: wait`, current heartbeat/queue/dependency evidence, and a concrete `Recommended Resume Time` or `Resume Condition` routes to `wait` with `Auto Continue: no`.
 6. For any other non-success implementation with consistent fields, follow its explicit `Suggested Workflow State` when that state is `implementation`, `blocked`, or `needs-user`; contradictory recommendations route to `review`.

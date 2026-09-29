@@ -1,8 +1,8 @@
 ---
 description: Maintains structured workspace memory under copilot/memory/
 mode: subagent
-model:  opencode-go/deepseek-v4-pro
-temperature: 1.0
+model:  opencode-go/deepseek-v4-flash
+temperature: 0.3
 top_p: 1
 permission:
   edit: allow

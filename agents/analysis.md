@@ -3,8 +3,8 @@ description: Interprets meaningful outputs and evidence from all workflow phases
 mode: subagent
 model: opencode-go/deepseek-v4-flash-vision-exp
 options:
-  reasoning_effort: max
-temperature: 1.0
+  reasoningEffort: max
+temperature: 0.5
 top_p: 0.95
 permission:
   edit: allow

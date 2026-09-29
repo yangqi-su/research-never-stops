@@ -218,9 +218,8 @@ Write the detailed record for the current phase to `phase/phase-NN/implementatio
 
 ## Execution Decision
 
-> Fill Slurm-specific fields (Queue State, Heartbeat Source, Wait Justified, Resume Condition, Monitoring) based on the loaded execution skill's report-back requirements.
+> This block records WHY and HOW the route was chosen. Live run state is recorded once, in `implementation-summary.md`, and must not be repeated here: `Run Mode`, `Execution Status`, `Job ID`, `Primary Output Location`, `Progress`, `Estimated Remaining`, `ETA Confidence`, `ETA Basis`, `Last Heartbeat`, `Recommended Resume Time`, and `Resume Condition` all live there. Fill the Slurm-specific fields below (Queue State, Heartbeat Source, Wait Justified, Monitoring) from the loaded execution skill's report-back requirements.
 
-- `Run Mode`: `none`, `local`, or `slurm`
 - `Decision Basis`: short factual reason for the routing choice
 - `Requested Cores`: integer core count or `none`
 - `Parallelization Plan`: short note on how work is parallelized or `none`
@@ -228,20 +227,10 @@ Write the detailed record for the current phase to `phase/phase-NN/implementatio
 - `Why Not Local`: short note when `slurm` is chosen, otherwise `none`
 - `Why Not Reduced`: short note if a weaker or faster rerun was considered, otherwise `none`
 - `Queue State`: `none`, `queued`, `running`, `completed`, `failed`, or `unknown`
-- `Heartbeat Source`: short note such as log path, metric file, stdout marker, or `none`
+- `Heartbeat Source`: output-file mtime, checkpoint timestamp, log path, stdout marker, or `none`
 - `Last Meaningful Progress`: timestamp or `none`
-- `Progress`: short progress marker or `none`
-- `Estimated Remaining`: duration/range or `unknown`
-- `ETA Confidence`: `high`, `medium`, `low`, or `unknown`
-- `ETA Basis`: log ETA, progress-rate estimate, scheduler upper bound, or `none`
-- `Last Heartbeat`: timestamp/source or `none`
-- `Recommended Resume Time`: timestamp or `none`
 - `Wait Justified`: `yes`, `no`, or `none`
-- `Resume Condition`: short note or `none`
-- `Execution Status`: `not-run`, `running`, `success`, `failed`, or `blocked`
-- `Job ID`: scheduler id or `none`
 - `Monitoring`: `none`, `active`, `finished`, `failed`, or `unknown`
-- `Primary Output Location`: plan sibling directory path or explicit external path
 - `External Result Location`: explicit path or `none`
 - `Result Manifest`: `result-manifest.md`, another manifest path, or `none`
 

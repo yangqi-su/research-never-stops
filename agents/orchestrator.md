@@ -2,7 +2,7 @@
 description: Runs the explicit workflow loop for existing plan-centered tasks by delegating workflow-directed stages until a terminal state
 mode: primary
 model: opencode-go/deepseek-v4-flash
-temperature: 0.5
+temperature: 0.7
 top_p: 1
 options:
   reasoningEffort: high
