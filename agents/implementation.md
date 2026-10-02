@@ -113,27 +113,27 @@ Use the following handoff contract directly in your output and files.
 Required summary header:
 
 - `Plan ID`: stable stem, i.e. `plans-20260321-1530-train-baseline`
-- `Plan`: current path to the plan file, i.e. `copilot/plans/active/plans-20260321-1530-train-baseline.md`
-- `Plan Sibling Directory`: current path to the plan's sibling directory. i.e. `copilot/plans/active/plans-20260321-1530-train-baseline/` — this is the ONLY output location; you may create subdirectories under it (e.g., `slurm/`, `scripts/`, `logs/`, `artifacts/`, `output/`) as needed, but NEVER create directories outside it
-- `Path State`: `active` or `archived`
+- `Plan`: current path to the plan file, i.e. `copilot/plans/docs/plans-20260321-1530-train-baseline.md`
+- `Plan Run Directory`: current path to `copilot/plans/runs/plans-20260321-1530-train-baseline/` — this is the ONLY output location; you may create subdirectories under it (e.g., `slurm/`, `scripts/`, `logs/`, `artifacts/`, `output/`) as needed, but NEVER create directories outside it
+- `Plan Lifecycle`: `active` or `finished`
 - `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
 - `Phase`: one-line description of the current active phase
 - `Timestamp`: creation or update time if known
 
-If the plan sibling directory path is not explicitly provided in your dispatch context, STOP and ask for it using the `question` tool — never invent a path.
+If the plan run directory path is not explicitly provided in your dispatch context, STOP and ask for it using the `question` tool — never derive it from the plan document path. Read legacy summary fields when needed, but write `Plan Run Directory` and `Plan Lifecycle` on the next substantive update. Do not write `PLAN_STATUS.md`; lifecycle transitions belong to `workflow`.
 
 Write `implementation-summary.md` using this exact section order:
 
 ```md
 # Implementation Summary
 
-- `Plan ID`: 
-- `Plan`: 
-- `Plan Sibling Directory`: 
-- `Path State`: 
-- `Status`: 
-- `Phase`: 
-- `Timestamp`: 
+- `Plan ID`:
+- `Plan`:
+- `Plan Run Directory`:
+- `Plan Lifecycle`:
+- `Status`:
+- `Phase`:
+- `Timestamp`:
 
 ## Overall State
 
@@ -154,7 +154,7 @@ Write `implementation-summary.md` using this exact section order:
 - `Run Mode`: `none`, `local`, or `slurm`
 - `Execution Status`: `not-run`, `running`, `success`, `failed`, or `blocked`
 - `Job ID`: scheduler id or `none`
-- `Primary Output Location`: plan sibling directory path or explicit external path
+- `Primary Output Location`: plan run directory path or explicit external path
 - `Progress`: short progress marker or `none`
 - `Estimated Remaining`: duration/range or `unknown`
 - `ETA Confidence`: `high`, `medium`, `low`, or `unknown`
@@ -177,7 +177,7 @@ Write `implementation-summary.md` using this exact section order:
 
 ### Next Step
 
-- `Suggested Workflow State`: `implementation`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
+- `Suggested Workflow State`: `implementation`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `finished`
 - `Review Recommended`: `yes` or `no`
 - `Review Reason`: `none`, `failure`, `risky-change`, or `unclear-result`
 - `Next Hint`: short note for `workflow`
@@ -190,8 +190,8 @@ Write the detailed record for the current phase to `phase/phase-NN/implementatio
 
 - `Plan ID`:
 - `Plan`:
-- `Plan Sibling Directory`:
-- `Path State`:
+- `Plan Run Directory`:
+- `Plan Lifecycle`:
 - `Status`:
 - `Phase`:
 - `Timestamp`:
@@ -238,7 +238,7 @@ Write the detailed record for the current phase to `phase/phase-NN/implementatio
 
 ## Next Step
 
-- `Suggested Workflow State`: `implementation`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
+- `Suggested Workflow State`: `implementation`, `review`, `analysis`, `wait`, `blocked`, `needs-user`, or `finished`
 - `Review Recommended`: `yes` or `no`
 - `Review Reason`: `none`, `failure`, `risky-change`, or `unclear-result`
 - `Next Hint`: short note for `workflow`
@@ -263,17 +263,17 @@ Bounded context-loading protocol:
 Rules:
 
 - MOST IMPORTANT: DO NOT OVERWRITE earlier phase records, and DO NOT create artifacts, scripts, logs and other outputs into `phase/phase-NN/`!
-- NEVER write outputs, intermediate files, logs, or artifacts to `/tmp/` or any system temp directory — all outputs go in the plan sibling directory
-- when scripts or tools default to `/tmp/`, redirect them to the plan sibling directory explicitly (e.g. `--output-dir`, `TMPDIR=`, `--tmpdir`, or environment variable overrides)
+- NEVER write outputs, intermediate files, logs, or artifacts to `/tmp/` or any system temp directory — all outputs go in the plan run directory
+- when scripts or tools default to `/tmp/`, redirect them to the plan run directory explicitly (e.g. `--output-dir`, `TMPDIR=`, `--tmpdir`, or environment variable overrides)
 - Do not hash, checksum, fingerprint, or freeze input data unless the current plan phase explicitly requires it. When a phase does require it, identify inputs by path plus size plus mtime before considering content hashing, hash only the smallest identifying component, and evoke `dummify` on that code.
-- set the working directory for any script execution to the plan sibling directory so that relative output paths land there by default
+- set the working directory for any script execution to the plan run directory so that relative output paths land there by default
 - treat the approved plan file plus the latest `workflow-summary.md` phase selection as the source of truth
 - ONLY EVER implement one specified phase of the plan by looking at `workflow-summary.md` in the plan directory
 - keep active-plan context anchored in the bounded top-level summaries and current phase records
 - consult shared `STATUS.md`, `FIX.md`, `copilot/memory/watchouts.md`, or `copilot/memory/fixes.md` only when a concrete current issue matches recurring project history
 - only read a `copilot/memory/plans/<plan-id>.md` page when a relevant watchout or fix lists it under `Relevant Plans`, or when the current issue clearly matches prior history
-- only read the original archived plan file or archived run-directory summaries when that memory plan page is insufficient for the current implementation risk
-- do not browse archived plans broadly
+- only read the original finished plan document or run-directory summaries when that memory plan page is insufficient for the current implementation risk
+- do not browse finished plans broadly
 - only read other relevant parts of `copilot/memory/` if certain errors keep on happening
 - preserve existing project conventions and unrelated user changes
 - keep edits small, reviewable, and directly tied to the current phase
@@ -289,7 +289,7 @@ Rules:
 - if the effective current phase `Commit Policy` requires a commit, create it after the policy conditions are met unless blocked by unrelated user changes, failed validation, ambiguous target repository, or no repository changes to commit.
 - if a commit that is required by policy is not made, record the concrete blocking reason; do not claim the user failed to ask for a commit.
 - commit only files that belong to the target project repository and current phase.
-- NEVER COMMIT files in `./copilot`, the plan sibling directory, workflow-control directories, or project-root workflow scaffolding.
+- NEVER COMMIT files in `./copilot`, the plan run directory, workflow-control directories, or project-root workflow scaffolding.
 - EMPHASIZING AGAIN: NEVER make git commits in project root despite it being a git repo unless the plan explicitly names project root as the target code repository.
 - every commit message must NOT include the current phase identifier (e.g. `DO NOT make commit messages like this phase-02: add preprocessing script`)
 - whenever a commit is created, record the repository path, commit hash, and commit message in the current phase detail file and summarize the commit outcome in `implementation-summary.md`.
@@ -301,7 +301,7 @@ Rules:
 - validation means the smallest check that the change is wired correctly, run once by you at the terminal or in a scratch call; it does not mean checks added inside the scientific code
 - decide and write the execution route before launching any run
 - keep `implementation-summary.md` as a cumulative whole-plan summary at or below 24,576 bytes
-- use `phase/phase-<id>/implementation-<id>.md` inside the plan sibling directory for detailed per-phase records; create the current phase directory if missing
+- use `phase/phase-<id>/implementation-<id>.md` inside the plan run directory for detailed per-phase records; create the current phase directory if missing
 - choose a stable phase id from the plan order, including suffixes such as `16a`, and keep reusing `phase/phase-<id>/implementation-<id>.md` for that phase
 - if a partial summary is needed before execution, write it into the top-level Current Phase section and the current phase detail file, then replace it with the fuller coherent phase state as execution progresses
 - when the current phase executes on Slurm, use ETA-aware bounded monitoring instead of waiting until terminal by default
@@ -316,18 +316,18 @@ Rules:
 - for a healthy long-running Slurm handoff, set `Status: running`, `Completion Status: not-satisfied`, `Validation Status: not-run`, `Execution Status: running`, `Suggested Workflow State: wait`, and `Review Recommended: no`
 - when `wait` is used, record job id, scheduler state, progress, estimated remaining time, ETA confidence, ETA basis, heartbeat source, last heartbeat, recommended resume time, and the evidence that should trigger the next resume
 - if local execution is chosen, still record why Slurm was not appropriate and why the job can finish without risking timeout or under-resource issues
-- treat the plan sibling directory as the default home for workflow-control artifacts and small implementation-side outputs
-- IMPORTANT DEFAULT: keep execution-side artifacts such as Slurm scripts, concise logs, command snapshots, config snapshots, and readiness-test outputs in the plan sibling directory by default like such:
-plan-sibling_directory/
+- treat the plan run directory as the default home for workflow-control artifacts and small implementation-side outputs
+- IMPORTANT DEFAULT: keep execution-side artifacts such as Slurm scripts, concise logs, command snapshots, config snapshots, and readiness-test outputs in the plan run directory by default like such:
+plan-run-directory/
   slurm/slurm sbatch scripts
   scripts/: python,R, etc. scripts used
   logs/: slurm log files, script log files
   artifacts/: artifacts created by the scripts
 
-- allow large or canonical experiment results outside the plan sibling directory only when the plan explicitly names the external destination or the user has approved it, ASK USER using `question` tool before doing so
+- allow large or canonical experiment results outside the plan run directory only when the plan explicitly names the external destination or the user has approved it, ASK USER using `question` tool before doing so
 - if the current phase will generate true experiment results and no canonical external result location has been specified, ASK USER using `question` tool before doing so
-- when outputs are stored outside the plan sibling directory, write `result-manifest.md` in the plan sibling directory that records the result roots, what was written there, and how those outputs map back to the current plan phase
-- always write `implementation-summary.md` in the plan sibling directory using the exact inline template above
+- when outputs are stored outside the plan run directory, write `result-manifest.md` in the plan run directory that records the result roots, what was written there, and how those outputs map back to the current plan phase
+- always write `implementation-summary.md` in the plan run directory using the exact inline template above
 - report `Status: success` only when `Completion Status: satisfied` and `Validation Status` is `passed` or `not-applicable`; use `Review Reason: unclear-result` when those fields cannot be established
 - preserve earlier phase directories and detail files
 - treat `implementation-summary.md` as a compact cumulative whole-plan ledger, not as a full accumulated narrative

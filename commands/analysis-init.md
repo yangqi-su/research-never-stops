@@ -21,8 +21,8 @@ The target scaffold should usually include:
 
 - `AGENTS.md` if missing, or a minimal additive update if present
 - `STATUS.md` if missing
-- `copilot/plans/active/`
-- `copilot/plans/archive/`
+- `copilot/plans/docs/`
+- `copilot/plans/runs/`
 - `opencode.json` if missing, containing an empty JSON object: `{}`
 
 Only create `copilot/memory/` when the user asks to initialize durable memory now; otherwise leave memory creation to `/status-init`.

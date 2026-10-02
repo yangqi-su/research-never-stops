@@ -137,7 +137,7 @@ Output the plan using this exact structure and section order:
 
 - `Implementation Cadence`: use fresh implementation agent sessions across phases, respecting per-phase `Implementation Agent` overrides
 - `Phase Transition Rule`: only advance after the current phase completion criteria are met or the user explicitly approves a plan change
-- `Archive Condition`: archive only after all required phases are complete or intentionally skipped with recorded justification
+- `Completion Condition`: mark the plan finished only after all required phases are complete or intentionally skipped with recorded justification
 ```
 
 When you stop, return the canonical plan block first only when the draft is ready for user approval, then clearly list any unresolved assumptions outside the block.

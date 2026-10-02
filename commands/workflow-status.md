@@ -8,7 +8,10 @@ Behavior:
 
 - use `$ARGUMENTS` as an optional plan id or plan path selector under the shared `copilot/plans/` backend
 - if multiple active plans exist and the arguments do not identify one, ask one focused question
-- summarize the active or archived plan, run directory, root session files such as `workflow-session-root.json` and `agent-sessions-root.json` when present, and the latest `workflow-summary.md`, `implementation-summary.md`, `review-summary.md`, and `analysis-summary.md` state if present
+- resolve the plan document under `copilot/plans/docs/`, its matching directory under `copilot/plans/runs/`, and lifecycle from `PLAN_STATUS.md`
+- exclude `claude-plans-*` from automatic selection; when one is explicitly selected, report only its Claude ownership, plan path, run directory, and authoritative lifecycle without invoking `workflow` or requiring OpenCode summaries
+- summarize active or finished lifecycle separately from execution progress, along with root session files such as `workflow-session-root.json` and `agent-sessions-root.json` and the latest bounded summaries when present
+- permit passive inspection of a finished plan without reopening it; do not treat run-only historical families as executable plans
 - report the selected `Implementation Agent` from `workflow-summary.md` when present
 - do not invoke `implementation`, `review`, or `analysis`
 - prefer passive status reporting from the existing summaries and session files rather than reconstructing workflow state yourself

@@ -72,7 +72,7 @@ Behavior:
 
 - `Implementation Cadence`: use fresh implementation agent sessions across phases, respecting per-phase `Implementation Agent` overrides
 - `Phase Transition Rule`: only advance after the current phase completion criteria are met or the user explicitly approves a plan change
-- `Archive Condition`: archive only after all required phases are complete or intentionally skipped with recorded justification
+- `Completion Condition`: mark the plan finished only after all required phases are complete or intentionally skipped with recorded justification
 ```
 
 When you stop, return the full plan markdown and clearly list any unresolved assumptions.

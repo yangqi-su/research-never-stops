@@ -11,7 +11,7 @@ Work in safe planning mode:
 - infer project structure from small files, scripts, workflow configs, manifests, README files, `AGENTS.md`, and directory layout
 - identify likely languages, workflow tools, current stage, execution environments, and any existing agentic-analysis files
 - identify likely large-artifact directories such as `data/`, `results/`, `output/`, `processed/`, `logs/`, `checkpoints/`, `models/`, and `artifacts/`
-- determine whether this project already has `AGENTS.md`, `STATUS.md`, `.opencode/`, `copilot/plans/`, or `copilot/memory/`
+- determine whether this project already has `AGENTS.md`, `STATUS.md`, `.opencode/`, `copilot/plans/docs/`, `copilot/plans/runs/`, or `copilot/memory/`
 - recommend the minimal project-local scaffold needed to support the research workflow
 - do not assume the project is bioinformatics unless evidence or the user says so
 

@@ -42,26 +42,26 @@ Required summary header:
 
 - `Plan ID`: stable stem such as `plans-20260321-1530-train-baseline`
 - `Plan`: current path to the plan file
-- `Plan Sibling Directory`: current path to the plan's sibling directory — this is the ONLY output location; you may create subdirectories under it as needed, but NEVER create directories outside it
-- `Path State`: `active` or `archived`
+- `Plan Run Directory`: current path to `copilot/plans/runs/<Plan ID>/` — this is the ONLY output location; you may create subdirectories under it as needed, but NEVER create directories outside it
+- `Plan Lifecycle`: `active` or `finished`
 - `Status`: `success`, `failed`, `partial`, `blocked`, `running`, or `not-run`
 - `Phase`: one-line description of the current active phase
 - `Timestamp`: creation or update time if known
 
-If the plan sibling directory path is not explicitly provided in your dispatch context, STOP and ask for it using the `question` tool — never invent a path.
+If the plan run directory path is not explicitly provided in your dispatch context, STOP and ask for it using the `question` tool — never derive it from the plan document path. Read legacy summary fields when needed, but write `Plan Run Directory` and `Plan Lifecycle` on the next substantive update. Do not write `PLAN_STATUS.md`; lifecycle transitions belong to `workflow`.
 
 Write `review-summary.md` using this exact section order:
 
 ```md
 # Review Summary
 
-- `Plan ID`: 
-- `Plan`: 
-- `Plan Sibling Directory`: 
-- `Path State`: 
-- `Status`: 
-- `Phase`: 
-- `Timestamp`: 
+- `Plan ID`:
+- `Plan`:
+- `Plan Run Directory`:
+- `Plan Lifecycle`:
+- `Status`:
+- `Phase`:
+- `Timestamp`:
 
 ## Overall Assessment
 
@@ -83,7 +83,7 @@ Write `review-summary.md` using this exact section order:
 
 ## Next Step
 
-- `Suggested Workflow State`: `implementation`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
+- `Suggested Workflow State`: `implementation`, `analysis`, `wait`, `blocked`, `needs-user`, or `finished`
 - `Retry Recommended`: `yes` or `no`
 - `Next Hint`: short note for `workflow`
 ```
@@ -95,8 +95,8 @@ Write the detailed current-phase review to `phase/phase-NN/review-NN.md`, preser
 
 - `Plan ID`:
 - `Plan`:
-- `Plan Sibling Directory`:
-- `Path State`:
+- `Plan Run Directory`:
+- `Plan Lifecycle`:
 - `Status`:
 - `Phase`:
 - `Timestamp`:
@@ -117,7 +117,7 @@ Write the detailed current-phase review to `phase/phase-NN/review-NN.md`, preser
 
 ## Next Step
 
-- `Suggested Workflow State`: `implementation`, `analysis`, `wait`, `blocked`, `needs-user`, or `archive`
+- `Suggested Workflow State`: `implementation`, `analysis`, `wait`, `blocked`, `needs-user`, or `finished`
 - `Retry Recommended`: `yes` or `no`
 - `Next Hint`: short note for `workflow`
 ```
@@ -132,8 +132,8 @@ Rules:
 - begin with `workflow-summary.md`, `implementation-summary.md`, `review-summary.md`, and the current `phase/phase-<id>/implementation-<id>.md`; do not read all historical phase directories
 - consult shared `STATUS.md`, `FIX.md`, `copilot/memory/watchouts.md`, or `copilot/memory/fixes.md` only when a concrete current failure or risk matches recurring project history
 - only read a `copilot/memory/plans/<plan-id>.md` page when a relevant watchout or fix lists it under `Relevant Plans`, or when the current diagnosis clearly matches prior history
-- only read the original archived plan file or specific archived run-directory summaries when that memory plan page is insufficient for the current diagnosis
-- do not browse archived plans broadly
+- only read the original finished plan document or specific run-directory summaries when that memory plan page is insufficient for the current diagnosis
+- do not browse finished plans broadly
 - focus on whether the implementation matched the stated goal and whether execution evidence supports success, failure, waiting, or ambiguity
 - focus on failure diagnosis, risky-change assessment, and unclear-result triage; normal interpretation of meaningful phase outputs belongs to `analysis`
 - distinguish confirmed findings from hypotheses
@@ -143,7 +143,7 @@ Rules:
 - do not recommend added validation, type checks, shape checks, defensive error handling, manifests, or provenance as a fix unless the failure was actually caused by their absence; name the specific failing evidence if you do
 - prefer the smallest fix that addresses the observed failure; a fix that adds machinery around working code is not a fix
 - if the code you are diagnosing is already obscured by checks or bookkeeping, say so as a finding rather than adding more
-- always write `review-summary.md` in the plan sibling directory using the exact inline template above
+- always write `review-summary.md` in the plan run directory using the exact inline template above
 - write detailed evidence to the current phase review file; update the same file coherently for same-phase retries rather than appending repeated full reviews
 - keep `review-summary.md` as a cumulative whole-plan review at or below 20,480 bytes; compress completed reviews to Review Progress rows and preserve only important resolved findings
 - rewrite the top-level summary as one coherent current whole-plan view on every update; do not append another full historical review
@@ -156,4 +156,4 @@ Rules:
 - do not invoke other agents
 - assume `orchestrator` owns delegation and that `workflow` will be resumed separately after you finish
 
-Your review should make it easy for `workflow` to decide whether to retry, wait, ask for clarification, or archive.
+Your review should make it easy for `workflow` to decide whether to retry, wait, ask for clarification, or mark the plan finished.
