@@ -1,7 +1,7 @@
 ---
 description: Reviews workflow and implementation summaries, suggests fixes for failures or unclear results, and writes an overall review summary
 mode: subagent
-model: openai/gpt-5.6-sol
+model: openai/gpt-6.1-sol
 options:
   reasoningEffort: high
 temperature: 0.7

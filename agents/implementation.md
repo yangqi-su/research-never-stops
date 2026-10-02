@@ -1,7 +1,7 @@
 ---
 description: Implements the current approved plan phase, performs lightweight validation, decides local versus Slurm execution, runs or submits work when needed, and writes a structured implementation summary
 mode: subagent
-model: openai/gpt-6-sol
+model: openai/gpt-6.1-sol
 options:
   reasoningEffort: medium
 permission:

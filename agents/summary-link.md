@@ -1,7 +1,7 @@
 ---
 description: Maintains shared STATUS.md and FIX.md from canonical and legacy memory sources
 mode: subagent
-model: openai/gpt-5.6-sol
+model: openai/gpt-6.1-sol
 options:
   reasoningEffort: high
 temperature: 0.2
