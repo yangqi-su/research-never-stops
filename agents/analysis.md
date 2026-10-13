@@ -1,11 +1,9 @@
 ---
 description: Interprets meaningful outputs and evidence from all workflow phases completed, records what was learned, and recommends the next workflow state
 mode: subagent
-model: opencode-go/deepseek-v4-flash-vision-exp
+model: openai/gpt-6.1-sol
 options:
-  reasoningEffort: max
-temperature: 0.5
-top_p: 0.95
+  reasoningEffort: xhigh
 permission:
   edit: allow
   bash:

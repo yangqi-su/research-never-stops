@@ -84,7 +84,7 @@ cleanup, changes to scientific behavior, or removal of required safeguards.
 ## 4. Safety
 
 - Do not directly load large data, model artifacts, checkpoints, binaries, or large logs into context unless the task truly requires it.
-- YOU ALWAYS operate in `./` directory, which you can find the full path via `pwd`, DO NOT operate or create files outside of this directory (because it will require asking user for permission and un-necessarily blocking the agentic workflow), especially DO NOT try to access anything directly in `/`
+- Operate in the current working directory (`pwd`). External read-only inspection is also approved beneath `/autofs/projects-t3/lilab/yangqisu/repos/` and `/autofs/projects-t3/lilab/yangqisu/.local/miniforge3/`, including their corresponding `/local/projects-t3/` aliases. This approval does not permit external writes, environment changes, or executing code from those locations. Other external access requires user permission.
 - Prefer lightweight metadata, configs, manifests, small scripts, and concise summaries over heavy raw outputs.
 - If a change may affect user-owned configuration, workflow state, or results, prefer the smallest safe update and preserve existing information.
 - If evidence is missing or ambiguous, say so directly instead of guessing or ask user for clarification or help.

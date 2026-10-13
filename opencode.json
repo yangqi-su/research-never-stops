@@ -1,6 +1,25 @@
 {
   "instructions": [],
   "$schema": "https://opencode.ai/config.json",
+  "permissions": [
+    { "action": "external_directory", "resource": "/autofs/projects-t3/lilab/yangqisu/repos/*", "effect": "allow" },
+    { "action": "external_directory", "resource": "/local/projects-t3/lilab/yangqisu/repos/*", "effect": "allow" },
+    { "action": "external_directory", "resource": "/autofs/projects-t3/lilab/yangqisu/.local/miniforge3/*", "effect": "allow" },
+    { "action": "external_directory", "resource": "/local/projects-t3/lilab/yangqisu/.local/miniforge3/*", "effect": "allow" },
+    { "action": "read", "resource": "/autofs/projects-t3/lilab/yangqisu/repos/*", "effect": "allow" },
+    { "action": "read", "resource": "/local/projects-t3/lilab/yangqisu/repos/*", "effect": "allow" },
+    { "action": "read", "resource": "/autofs/projects-t3/lilab/yangqisu/.local/miniforge3/*", "effect": "allow" },
+    { "action": "read", "resource": "/local/projects-t3/lilab/yangqisu/.local/miniforge3/*", "effect": "allow" }
+  ],
+  "experimental": {
+    "subagent_depth": 2,
+    "policies": [
+      { "action": "permission", "resource": "edit:/autofs/projects-t3/lilab/yangqisu/repos/*", "effect": "deny" },
+      { "action": "permission", "resource": "edit:/local/projects-t3/lilab/yangqisu/repos/*", "effect": "deny" },
+      { "action": "permission", "resource": "edit:/autofs/projects-t3/lilab/yangqisu/.local/miniforge3/*", "effect": "deny" },
+      { "action": "permission", "resource": "edit:/local/projects-t3/lilab/yangqisu/.local/miniforge3/*", "effect": "deny" }
+    ]
+  },
   "lsp": true,
   "compaction": {
     "auto": false,
@@ -25,10 +44,9 @@
       }
     },
     "build": {
-      "model": "openai/gpt-6.1-sol",
+      "model": "openai/gpt-6-astra",
       "options": {
-        "reasoningEffort": "high",
-        "temperature": 0.7
+        "reasoningEffort": "medium"
       },
       "tools": {
         "write": true,
@@ -45,9 +63,9 @@
       }
     },
     "explore": {
-      "model": "opencode-go/deepseek-v4-flash",
+      "model": "openai/gpt-6.1-sol",
       "options": {
-        "reasoningEffort": "max",
+        "reasoningEffort": "high",
         "temperature": 0.7
       },
       "tools": {

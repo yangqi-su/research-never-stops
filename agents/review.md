@@ -3,9 +3,7 @@ description: Reviews workflow and implementation summaries, suggests fixes for f
 mode: subagent
 model: openai/gpt-6.1-sol
 options:
-  reasoningEffort: high
-temperature: 0.7
-top_p: 0.95
+  reasoningEffort: xhigh
 permission:
   edit: allow
   webfetch: allow

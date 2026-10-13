@@ -15,10 +15,10 @@ Behavior:
 - reopen a finished plan only on explicit user direction, through `workflow`, before dispatching leaf work
 - resume the exact workflow task id stored in `workflow-session-root.json`; replace it only when absent or explicitly rejected by the task tool, except for an explicitly requested migrated-plan fresh-session handoff
 - use or refresh `agent-sessions-root.json` for leaf-agent continuity
-- if the latest existing `workflow-summary.md` has `Next Stage: wait`, treat this as a suspended `pro-implementation` continuation: resume the current-phase `pro-implementation` task before resuming workflow, regardless of why the wait happened
-- if that saved `pro-implementation` task cannot be resumed, start one replacement `pro-implementation` session with the current wait-continuation context
-- after `pro-implementation` refreshes the phase state, resume the persistent `workflow` sidecar once so it can record the result and choose the next stage
-- if the latest state is not `wait`, start or resume the persistent `workflow` sidecar normally
+- after required reopening or migrated-session handoff, handle any explicit intervention first; otherwise, if the latest `workflow-summary.md` has `Next Stage: wait`, resume its current-phase `Wait Owner` before workflow using the orchestrator's wait-resume invariant, including legacy owner resolution
+- if that owner's saved session is missing, phase-mismatched, or explicitly rejected, start one replacement session of the same agent with the wait-continuation context
+- after the owner refreshes the phase state, resume the persistent `workflow` sidecar once so it can record the result and choose the next stage
+- if neither an intervention nor a wait continuation applies, start or resume the persistent `workflow` sidecar normally
 - if `$ARGUMENTS` contains an explicit user intervention, apply the orchestrator intervention fast path; dispatch a clearly requested implementation, review, or analysis action before resuming workflow
 - resume the same persistent workflow session after the fast-path leaf action completes so workflow can record the resulting state
 - keep delegating automatically according to `workflow` stage decisions until `workflow` returns a terminal state: `finished`, `wait`, `blocked`, or `needs-user`

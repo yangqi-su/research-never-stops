@@ -16,7 +16,7 @@ Behavior:
 - if the user explicitly requests fresh sessions for a migrated plan, preserve old ledgers as history but do not resume their task ids
 - create `workflow-session-root.json` only when no workflow task id exists; otherwise resume its exact task id and replace it only after an explicit failed resume, except for an explicitly requested migrated-plan fresh-session handoff
 - maintain `agent-sessions-root.json` for leaf-agent continuity
-- start or resume the persistent `workflow` sidecar
+- follow the orchestrator's ordering: required reopening or migrated-session handoff, explicit intervention, plain wait continuation, then workflow; start or resume the persistent `workflow` sidecar with any resulting leaf report
 - keep delegating automatically according to `workflow` stage decisions until `workflow` returns a terminal state: `finished`, `wait`, `blocked`, or `needs-user`
 - use the implementation agent selected by `workflow`; valid implementation agents are `implementation` and `pro-implementation`
 - when `workflow` recommends `<agent> (start fresh agent)`, start a new session of that specified implementation agent

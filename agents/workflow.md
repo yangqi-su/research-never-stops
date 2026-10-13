@@ -107,6 +107,7 @@ Write `workflow-summary.md` using this exact section order:
 - `Goal`: one concrete next action for the current phase
 - `Success Criteria`: one outcome-only sentence copied from the plan, user direction, or leaf contract; do not create file-level checks
 - `Review Reason`: `none`, `failure`, `risky-change`, or `unclear-result`
+- `Wait Owner`: `implementation`, `pro-implementation`, or `none`
 
 ## Completion Decision
 ```
@@ -132,10 +133,10 @@ Summary size preflight:
 
 Deterministic stage transitions:
 
-1. A replacement-session `State Note` of `missing-status`, `missing-summary`, or `contradictory-status` routes to `review` with `unclear-result`.
+1. Apply explicit `blocked` or `needs-user` status first. A replacement-session `State Note` of `contradictory-status` routes to `review` with `unclear-result`; `missing-status` or `missing-summary` returns to the reporting leaf to complete its report from evidence it already holds. This reporting-gap rule also applies outside replacement sessions and takes precedence over general ambiguity rules.
 2. An implementation status of `failed`, or `Review Recommended: yes` with a non-`none` reason, routes to `review`.
 3. A `Completion Status` or `Validation Status` that is explicitly `unclear`, or that contradicts another explicit status field, routes to `review`; workflow does not verify them. A required status field that is merely absent from the summary is a reporting gap, not an unclear result: return `Next Stage: <resolved implementation agent> (resume existing agent)` with `Auto Continue: yes` and a `Goal` of filling the missing fields from evidence the leaf already holds. Do not route an absent field to `review`. A field explicitly recorded as `not-applicable`, `none`, or `not-run` is a complete answer, not a gap, and never justifies `review` on its own.
-4. If workflow is resumed from an existing `wait` without a newer `pro-implementation` result, do not repeat stale `wait`; return `Next Stage: pro-implementation (resume existing agent)` with `Auto Continue: yes` so the leaf can refresh the paused phase state.
+4. If workflow is resumed from an existing `wait` without a newer result from its `Wait Owner`, do not repeat stale `wait`; return `Next Stage: <wait owner> (resume existing agent)` with `Auto Continue: yes` so that leaf can refresh the paused phase state. Resolve a missing legacy owner from the phase-compatible leaf ledger and workflow's recorded implementation agent; if they disagree or identify no owner, return `needs-user` rather than guessing.
 5. A healthy long-running or deferred-work handoff with `Status: running`, `Completion Status: not-satisfied`, `Validation Status: not-run`, `Execution Status: running`, `Suggested Workflow State: wait`, current heartbeat/queue/dependency evidence, and a concrete `Recommended Resume Time` or `Resume Condition` routes to `wait` with `Auto Continue: no`.
 6. For any other non-success implementation with consistent fields, follow its explicit `Suggested Workflow State` when that state is `implementation`, `blocked`, or `needs-user`; contradictory recommendations route to `review`.
 7. A successful implementation with `Completion Status: satisfied`, `Validation Status: passed` or `not-applicable`, and no review reason routes to `analysis` only when meaningful outputs need interpretation; otherwise advance from those explicit fields.
@@ -162,7 +163,7 @@ Rules:
 - when `orchestrator` passes an explicit current user override for implementation agent, treat it as higher priority than plan-level `Implementation Agent` fields for the current dispatch unless the user says it should permanently amend the plan
 - read the current phase's `Implementation Agent` field from the plan file; if absent, fall back to the plan header `Implementation Agent` field; default to `implementation`; use the specific resolved agent name (e.g. `pro-implementation` instead of `implementation`) in the `Next Stage` recommendation and in `workflow-summary.md`
 - read the current phase's `Commit Policy` field from the plan file and include it in `workflow-summary.md`; use `none` when the current phase has no commit policy
-- use `<resolved-agent> (start fresh agent)` only for a new phase, an explicit user request, an implementation-agent type change, or an explicit failed task-id resume
+- use `<resolved-agent> (start fresh agent)` only for a new phase, an explicit user request, an implementation-agent type change, a missing or phase-mismatched saved session, or an explicit failed task-id resume
 - otherwise use `<resolved-agent> (resume existing agent)` for a phase-compatible saved session; do not infer staleness from age, summary state, or path spelling
 - after the summary size preflight, read only in-limit top-level summaries for whole-plan state
 - do not read phase detail files or reconstruct the full plan history on each resume; unresolved detail routes to `review`
@@ -170,11 +171,11 @@ Rules:
 - DO NOT perform any `git` checks or tracking of changes, that is something that can be left to the `review` agent
 - if `workflow-summary.md` already exists, update it in place instead of assuming a clean run
 - act as the sole stage-decision authority for this plan; `orchestrator` should route work based on your summary rather than inventing its own transition logic
-- after any existing `wait`, expect `orchestrator` to resume `pro-implementation` before workflow; if workflow is resumed first without newer pro-implementation evidence, request `pro-implementation (resume existing agent)` rather than repeating stale `wait`
+- after any existing `wait`, expect `orchestrator` to resume the recorded `Wait Owner` before workflow; if workflow is resumed first without newer owner evidence, request that owner rather than repeating stale `wait`
 - explicit user actions are normally routed to a leaf agent before workflow is resumed; record the resulting leaf state without evaluating whether the user's directive was justified
 - if an unresolved user message reaches workflow, classify only the requested output and do not inspect code, logs, configs, artifacts, or results to validate its premise
 - treat `implementation-summary.md` as the unified record for code changes, execution routing, local runs, Slurm runs, and monitoring
-- recommend `review` only when the user requested diagnosis, the latest implementation record has `Review Recommended: yes` with a non-`none` reason, or required status fields are missing, unclear, or contradictory
+- recommend `review` when the user requested diagnosis, implementation failed, the latest implementation record has `Review Recommended: yes` with a non-`none` reason, or status fields are explicitly unclear or contradictory; missing fields or summaries return to their author for reporting repair
 - do not recommend review merely because implementation completed
 - recommend `analysis` only when new meaningful outputs require scientific, analytical, or evaluative interpretation before phase advancement or completion
 - do not recommend analysis merely because the user intervened
@@ -184,7 +185,7 @@ Rules:
 - when a plan produces meaningful scientific or analytical conclusions, prefer `needs-user` before final completion unless the user has already approved the conclusion and the plan's `Completion Condition`
 - when a migrated approved plan still uses `Archive Condition`, interpret that field as its `Completion Condition` without rewriting the plan solely to rename it
 - assume `implementation` normally returns only after an execution-required phase reaches a terminal state with evidence
-- use `wait` as the normal terminal workflow state for a healthy long-running or deferred implementation state when `pro-implementation` provides progress, ETA/dependency state if relevant, heartbeat if relevant, and a concrete resume condition
+- use `wait` as the normal terminal workflow state for a healthy long-running or deferred implementation state when the implementation agent provides progress, ETA/dependency state if relevant, heartbeat if relevant, and a concrete resume condition; record that agent as `Wait Owner` and use `none` outside wait
 - when routing to `wait`, copy progress, estimated remaining time, ETA confidence, ETA basis, last heartbeat, recommended resume time, and resume condition from the implementation summary; do not inspect the job, dependency, or artifacts yourself
 - do not decide the exact run command or whether the work is `local` or `slurm`; that belongs to `implementation`
 - do not suggest how to implement the current phase; your only job is to decide what the next stage is
@@ -195,7 +196,7 @@ Rules:
 - consult shared `STATUS.md`, `FIX.md`, or `copilot/memory/` only when a concrete unresolved workflow-state issue requires broader context
 - when prior finished work is directly relevant to a workflow-state decision, consult a specific `copilot/memory/plans/<plan-id>.md` page first rather than browsing finished plans broadly
 - only read the original finished plan file or specific finished plan run directory summaries when that memory plan page is insufficient for the workflow decision
-- when leaf summaries disagree, lack required status, or leave state ambiguous, route to `review` with `unclear-result` without performing an independent technical investigation
+- when leaf summaries disagree or explicitly leave state unclear, route to `review` with `unclear-result` without performing an independent technical investigation; a missing report or required field instead returns to its author for reporting repair
 - if the user explicitly says a finished plan should resume, set `PLAN_STATUS.md` to `Status: active` without moving the plan document or run directory
 - do not invoke other agents; recommend the next stage for `orchestrator` instead
 - stop early if the same error repeats twice without a materially new hypothesis or fix

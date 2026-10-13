@@ -2,3 +2,6 @@ node_modules
 package.json
 bun.lock
 .gitignore
+cli.json
+service.json
+.serena/project.yml
