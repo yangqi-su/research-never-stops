@@ -2,7 +2,7 @@
 
 This repo is `~/.config/opencode`. It is one half of a two-harness research setup. The other half is the Claude Code config in `~/.claude` (private repo `yangqi-su/claude-harness`). How the two interact (shared project folders, second opinions in both directions, duplicated skills) is described in `~/.claude/README.md`.
 
-Use branch `main`. The GitHub default branch (`execution-agent-redesign`) is older.
+Use branch `main` (the default). `execution-agent-redesign` is an older branch.
 
 ## Setting up on a new server
 
@@ -15,7 +15,7 @@ Needed on `PATH`: `opencode`, `claude`, `git`, `gh`, `bun`, `node`, `jq` (Claude
 ### 2. Clone both repos
 
 ```bash
-git clone -b main https://github.com/yangqi-su/research-never-stops ~/.config/opencode
+git clone https://github.com/yangqi-su/research-never-stops ~/.config/opencode
 git clone https://github.com/yangqi-su/claude-harness ~/.claude
 cd ~/.config/opencode && bun install
 ```
